@@ -24,11 +24,11 @@ export function readPuzzleInput(puzzleNumber: number): string {
 /**
  * Splits the given input by line.
  *
- * Each line of the given input will be a seperate entry in the returned array.
+ * Each line of the given input will be a seperate entry in the returned array. It ignores empty lines.
  *
  * @param input Input to split by line
  * @returns Array with strings in which every (previous) line is an entry
  */
 export function getLinesOfInput(input: string): string[] {
-    return input.split(/\r\n|\r|\n/);
+    return input.split(/\r\n|\r|\n/).filter((line) => line !== '');
 }
