@@ -16,7 +16,7 @@ export function readPuzzleInput(puzzleNumber: number): string {
         numString = '0' + numString;
     }
 
-    let fileContentBuffer: Buffer = fs.readFileSync(path.join(__dirname, '..',  '..', 'input', `puzzle${numString}.txt`));
+    let fileContentBuffer: Buffer = fs.readFileSync(path.join(__dirname, '..', '..', 'input', `puzzle${numString}.txt`));
 
     return fileContentBuffer.toString();
 }
@@ -31,4 +31,21 @@ export function readPuzzleInput(puzzleNumber: number): string {
  */
 export function getLinesOfInput(input: string): string[] {
     return input.split(/\r\n|\r|\n/).filter((line) => line !== '');
+}
+
+/**
+ * Prints the given map to the console.
+ * 
+ * Prints the content of the given map to the console. Alternating between a line with the key and a line with the corresponding value.
+ * 
+ * @param map Map to print to console
+ */
+export function printMap(map: Map<any, any>) {
+    let it = map.entries();
+    let next = it.next();
+
+    while (!next.done) {
+        console.log(next.value[0], next.value[1]);
+        next = it.next();
+    }
 }
