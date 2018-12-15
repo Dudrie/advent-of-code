@@ -7,16 +7,18 @@ import * as path from 'path';
  * Reads the corresponding input file of the given puzzle by translating the puzzleNumber to a string. If the puzzleNumber does not have 2 digits a leading 0 will be added. The input is returned as a single String.
  *
  * @param puzzleNumber Number of the puzzle of which the input file should be read
+ * @param loadTestInput (default: false) Determines if the test input (`true`) or the real input (`false`) should be loaded.
+ * 
  * @returns Puzzle input as String
  */
-export function readPuzzleInput(puzzleNumber: number, test: boolean = false): string {
+export function readPuzzleInput(puzzleNumber: number, loadTestInput: boolean = false): string {
     let numString: string = puzzleNumber + '';
 
     if (puzzleNumber < 10 || numString.length < 2) {
         numString = '0' + numString;
     }
 
-    let testString: string = test ? 'Test' : '';
+    let testString: string = loadTestInput ? 'Test' : '';
     let fileContentBuffer: Buffer = fs.readFileSync(path.join(__dirname, '..', '..', 'input', `puzzle${numString}${testString}.txt`));
 
     return fileContentBuffer.toString();
