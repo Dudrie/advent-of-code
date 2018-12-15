@@ -9,14 +9,15 @@ import * as path from 'path';
  * @param puzzleNumber Number of the puzzle of which the input file should be read
  * @returns Puzzle input as String
  */
-export function readPuzzleInput(puzzleNumber: number): string {
+export function readPuzzleInput(puzzleNumber: number, test: boolean = false): string {
     let numString: string = puzzleNumber + '';
 
     if (puzzleNumber < 10 || numString.length < 2) {
         numString = '0' + numString;
     }
 
-    let fileContentBuffer: Buffer = fs.readFileSync(path.join(__dirname, '..', '..', 'input', `puzzle${numString}.txt`));
+    let testString: string = test ? 'Test' : '';
+    let fileContentBuffer: Buffer = fs.readFileSync(path.join(__dirname, '..', '..', 'input', `puzzle${numString}${testString}.txt`));
 
     return fileContentBuffer.toString();
 }
