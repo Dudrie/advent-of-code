@@ -7,21 +7,37 @@ import * as path from 'path';
  * Reads the corresponding input file of the given puzzle by translating the puzzleNumber to a string. If the puzzleNumber does not have 2 digits a leading 0 will be added. The input is returned as a single String.
  *
  * @param puzzleNumber Number of the puzzle of which the input file should be read
- * @param loadTestInput (default: false) Determines if the test input (`true`) or the real input (`false`) should be loaded.
+ * @param testNr (default: 0) Determines if and which test input to load which is set by the number. The number has to be higher than 0 and there has to exist a file ending with 'TestXX' where 'XX' is the number.
  * 
  * @returns Puzzle input as String
  */
-export function readPuzzleInput(puzzleNumber: number, loadTestInput: boolean = false): string {
-    let numString: string = puzzleNumber + '';
+export function readPuzzleInput(puzzleNumber: number, testNr: number = 0): string {
+    let numString: string = getNumString(puzzleNumber, length);
 
-    if (puzzleNumber < 10 || numString.length < 2) {
-        numString = '0' + numString;
-    }
-
-    let testString: string = loadTestInput ? 'Test' : '';
+    let testString: string = testNr > 0 ? `Test${getNumString(testNr, 2)}` : '';
     let fileContentBuffer: Buffer = fs.readFileSync(path.join(__dirname, '..', '..', 'input', `puzzle${numString}${testString}.txt`));
 
     return fileContentBuffer.toString();
+}
+
+/**
+ * Converts a number to a string with a given length.
+ * 
+ * Converts the given number to a string with the specified length. If the number itself is to short the string gets enlarged by adding leading zeros.
+ * 
+ * @param num Number to convert to a string
+ * @param length Length the returned string should have
+ * 
+ * @returns String of the given number with the given length.
+ */
+function getNumString(num: number, length: number): string {
+    let numString: string = num + '';
+
+    while (numString.length < length) {
+        numString = '0' + numString;
+    }
+
+    return numString;
 }
 
 /**
