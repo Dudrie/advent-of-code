@@ -1,3 +1,8 @@
+/** 
+ * TODO: Write a (second) solution using complex numbers as it's stated in an idea in the comment from Shemetz on the AoC subreddit
+ * 
+ * Q: https://www.reddit.com/r/adventofcode/comments/a5qd71/2018_day_13_solutions/ebolyq6
+*/
 import { getLinesOfInput, readPuzzleInput } from './util/utils';
 
 enum Direction {
