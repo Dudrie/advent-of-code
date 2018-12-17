@@ -12,7 +12,7 @@ import * as path from 'path';
  * @returns Puzzle input as String
  */
 export function readPuzzleInput(puzzleNumber: number, testNr: number = 0): string {
-    let numString: string = getNumString(puzzleNumber, length);
+    let numString: string = getNumString(puzzleNumber, 2);
 
     let testString: string = testNr > 0 ? `Test${getNumString(testNr, 2)}` : '';
     let fileContentBuffer: Buffer = fs.readFileSync(path.join(__dirname, '..', '..', 'input', `puzzle${numString}${testString}.txt`));
