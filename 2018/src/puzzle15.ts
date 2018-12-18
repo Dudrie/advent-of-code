@@ -1,267 +1,218 @@
-// TODO: Redo with a proper and CLEANER approach.
+/**
+ * Hige thanks to the comment of albertobastos for providing an idea to solve the movement problem (without doing pathfinding >.<).
+ * 
+ * Reddit: https://www.reddit.com/r/adventofcode/comments/a6chwa/2018_day_15_solutions/ebuaht5
+ * GitHub: https://github.com/albertobastos/advent-of-code-2018-nodejs/blob/master/src/d15.js
+ */
 import { getLinesOfInput, readPuzzleInput } from './util/utils';
 
-type GameField = string[][];
 type Position = { x: number, y: number };
-type Path = Position[];
-type Entity = { team: 'Elf' | 'Goblin', power: number, health: number, pos: Position };
+type Tile = { pos: Position, isWalkable: boolean };
+type GameField = { tiles: { [posStr: string]: Tile }, width: number, height: number };
+type Entity = { tile: Tile, team: 'Elf' | 'Goblin', power: number, health: number };
 
-type Node = { tile: Position, nodesConnected: Node[] };
+enum ActionEndState {
+    COMPLETED, END_GAME, ABORTED
+}
 
-class PathfindingGraph {
-    private _nodes: Map<string, Node>;
-    public get nodes(): Map<string, Node> {
-        return this._nodes;
-    }
+function initGameField(input: string[], addPowerElfs: number) {
+    GAME_FIELD.height = input.length;
 
-    constructor(field: GameField) {
-        this._nodes = new Map();
-
-        for (let x = 0; x < field.length; x++) {
-            for (let y = 0; y < field[x].length; y++) {
-                if (field[x][y] === TILE_WALKABLE && !getEntityOnPosition({ x, y })) {
-                    // Create a node for every walkable tile.
-                    this._nodes.set(
-                        PathfindingGraph.getStringForPosition({ x, y }),
-                        { tile: { x, y }, nodesConnected: [] }
-                    );
-                }
-            }
+    for (let y = 0; y < input.length; y++) {
+        if (input[y].length > GAME_FIELD.width) {
+            GAME_FIELD.width = input[y].length;
         }
 
-        // Create edges to the neighbours
-        for (let pos of this._nodes.keys()) {
-            let node: Node = this._nodes.get(pos)!;
-            let { x, y } = node.tile;
+        for (let x = 0; x < input[y].length; x++) {
+            let symb: string = input[y].charAt(x).trim();
 
-            // Search for walkable nodes on the top, left, bottom, right and add edges to these tiles if they exist.
-            let posToCheck: string;
-
-            posToCheck = PathfindingGraph.getStringForPosition({ x, y: y - 1 });
-            if (this._nodes.has(posToCheck)) {
-                node.nodesConnected.push(this._nodes.get(posToCheck)!);
+            if (!symb) {
+                continue;
             }
 
-            posToCheck = PathfindingGraph.getStringForPosition({ x: x + 1, y: y });
-            if (this._nodes.has(posToCheck)) {
-                node.nodesConnected.push(this._nodes.get(posToCheck)!);
-            }
+            // Add the tile to the game
+            let tile: Tile = { pos: { x, y }, isWalkable: symb !== TILE_WALL };
+            GAME_FIELD.tiles[convertPosToString({ x, y })] = tile;
 
-            posToCheck = PathfindingGraph.getStringForPosition({ x, y: y + 1 });
-            if (this._nodes.has(posToCheck)) {
-                node.nodesConnected.push(this._nodes.get(posToCheck)!);
-            }
+            if (symb === 'G') {
+                ENTITIES_ALIVE.push({
+                    tile,
+                    team: 'Goblin',
+                    power: START_POWER,
+                    health: START_HEALTH
+                });
 
-            posToCheck = PathfindingGraph.getStringForPosition({ x: x - 1, y });
-            if (this._nodes.has(posToCheck)) {
-                node.nodesConnected.push(this._nodes.get(posToCheck)!);
+            } else if (symb === 'E') {
+                ENTITIES_ALIVE.push({
+                    tile,
+                    team: 'Elf',
+                    power: START_POWER + addPowerElfs,
+                    health: START_HEALTH
+                });
             }
         }
     }
-
-    public static getStringForPosition(pos: Position): string {
-        return `${pos.x},${pos.y}`;
-    }
 }
 
-enum TurnEndState {
-    COMPLETED, ABORTED
-}
-
-function runGame() {
-    let roundNr: number = 0;
-    printGameField(roundNr);
-
-    // FIXME Testing!!
-    let ent: Entity = entitiesAlive[0]; // Should b the first goblin.
-
-    console.log(ent.team, ent.pos);
-
-    takeTurn(ent);
-    printGameField(1);
-
-    return;
-
-    // while (true) { // FIXME: Run the real game (while loop) instead of only the first turn!
-    for (let ent of entitiesAlive) {
-        if (takeTurn(ent) === TurnEndState.ABORTED) {
-            endGame(roundNr);
-            return;
-        }
-    }
-
-    roundNr++;
-    printGameField(roundNr);
-    // }
-}
-
-function endGame(lastCompletedRound: number) {
-    let result: number = lastCompletedRound * entitiesAlive.reduce((prevVal, ent) => prevVal + ent.health, 0);
-
-    console.log(`Part A -- Outcome of battle: ${result}`);
-}
-
-function takeTurn(entity: Entity): TurnEndState {
+function takeTurn(entity: Entity): ActionEndState {
+    // Find all possible targets (aka 'enemies')
     let posTargets: Entity[] = getPossibleTargets(entity);
 
+    // If there are no possible targets, call for the end game.
     if (posTargets.length === 0) {
-        // If we can not find possible targets the game is over
-        return TurnEndState.ABORTED;
+        return ActionEndState.END_GAME;
     }
 
-    // Propagate the rest of the turn down to the next state.
-    return determineTarget(entity, posTargets);
+    // Attack one target, if close to it
+    let hasAttacked: boolean = (tryToAttackNearbyEnemy(entity) === ActionEndState.COMPLETED);
+
+    if (hasAttacked) {
+        return ActionEndState.COMPLETED;
+    }
+
+    // Move to a target, if none could be attacked.
+    moveToEnemy(entity, posTargets);
+
+    // Now, try to attack again
+    tryToAttackNearbyEnemy(entity);
+
+    return ActionEndState.COMPLETED;
 }
 
-function determineTarget(entity: Entity, posTargets: Entity[]): TurnEndState {
-    let adjacentOpen: Position[] = [];
+function tryToAttackNearbyEnemy(entity: Entity): ActionEndState {
+    let adjTiles: Tile[] = getAdjacentTiles(entity.tile);
+    let enemies: Entity[] = [];
 
-    for (let target of posTargets) {
-        adjacentOpen.push(...getAdjacentOpenTiles(target));
-    }
+    for (let tile of adjTiles) {
+        let enemy: Entity | undefined = getEntityAtPos(tile.pos);
 
-    if (adjacentOpen.length === 0) {
-        return TurnEndState.ABORTED;
-    }
-
-    // Already adjacent to one/more enemies? If so, attack one of those.
-    let adjacentEnemies: Entity[] = getAdjacentEnemies(entity);
-
-    if (adjacentEnemies.length > 0) {
-        // We are already adjacent to enemies (prop just one) so we take the one with the lowest hitpoints.
-        adjacentEnemies.sort((a, b) => a.health - b.health);
-        attackEnemy(entity, adjacentEnemies[0]);
-
-        return TurnEndState.COMPLETED;
-    }
-
-    // We are NOT adjacent to an enemy, so we need to find the shortest path to an enemy (if there's one available).
-    moveEntityToClosestEnemy(entity, adjacentOpen);
-
-    return TurnEndState.COMPLETED;
-}
-
-function moveEntityToClosestEnemy(entity: Entity, adjacentOpen: Position[]) {
-    if (adjacentOpen.length === 0) {
-        return;
-    }
-
-    // Take the first field and calculate the shortest path to it. Take this as a referecen (therefore exclude it from the iteration) to find the REAL shortest path to one of the adjacentOpen fields.
-    let shortestPath: Path = [];
-    let shortestPathLength: number = Number.MAX_SAFE_INTEGER;
-
-    for (let adj of adjacentOpen) {
-        let path = getShortestPath(entity.pos, adj);
-
-        if (path.length === 0) {
-            // There's no path to that target, so skip it.
-            continue;
+        if (enemy && enemy.team !== entity.team) {
+            enemies.push(enemy);
         }
+    }
 
-        if (path.length < shortestPathLength) {
-            shortestPath = path;
-            shortestPathLength = path.length;
-
-        } else if (path.length === shortestPathLength) {
-            if (comparePositions(path[1], shortestPath[1]) < 0) {
-                // The path's end point is the one taken by the reading order
-                shortestPath = path;
+    if (enemies.length > 0) {
+        enemies.sort((a, b) => {
+            if (a.health === b.health) {
+                // If two enemies have the same health, we attack the one who's first in reading order.
+                return comparePositions(a.tile.pos, b.tile.pos);
             }
-        }
+
+            return a.health - b.health;
+        });
+
+        attackEnemy(entity, enemies[0]);
+        return ActionEndState.COMPLETED;
     }
 
-    // Move one step along this path.
-    entity.pos = shortestPath[0];
-
-    // This changes the field, so recreate the pathfinding graph
-    pathFindingGraph = buildPathFindingGraph();
+    return ActionEndState.ABORTED;
 }
 
-function attackEnemy(myEntity: Entity, enemy: Entity) {
-    enemy.health -= myEntity.power;
+function attackEnemy(attacker: Entity, defender: Entity) {
+    defender.health -= attacker.power;
 
-    if (enemy.health <= 0) {
-        // Enemy is dead, so remove it
-        let idx: number = entitiesAlive.indexOf(enemy);
+    if (defender.health <= 0) {
+        // Defender is dead, so remove this entity from the field
+        let idx: number = ENTITIES_ALIVE.indexOf(defender);
 
         if (idx === -1) {
-            console.warn('Could not find dead entity in list of alive entities.');
+            console.error('AN ENTITY WAS KILLED BUT COULD NOT BE REMOVED?!');
         }
 
-        entitiesAlive.splice(idx, 1);
-
-        // This changes the field, so recreate the pathfinding graph
-        pathFindingGraph = buildPathFindingGraph();
+        ENTITIES_ALIVE.splice(idx, 1);
     }
+}
+
+function moveToEnemy(entity: Entity, posTargets: Entity[]) {
+    let nextMove: Tile | undefined = findNextMove(entity, posTargets);
+
+    if (nextMove) {
+        entity.tile = nextMove;
+    }
+}
+
+function findNextMove(entity: Entity, posTargets: Entity[]): Tile | undefined {
+    let paths: Tile[][] = [];
+    let targetTiles: Tile[] = posTargets.map((t) => t.tile);
+    let visited: Tile[] = [];
+
+    // We start at the position of the entity
+    paths.push([entity.tile]);
+    visited.push(entity.tile);
+
+    let allTilesCount: number = Object.values(GAME_FIELD.tiles).length;
+
+    // While we have not visited all tiles, try to find a path
+    while (visited.length < allTilesCount) {
+        let newPaths: Tile[][] = [];
+        let targetPaths: Tile[][] = [];
+
+        // We'll extend every path (if possible) by adding the next step to it.
+        paths.forEach((path) => {
+            let adjTiles: Tile[] = getAdjacentTiles(path[path.length - 1]);
+            adjTiles.forEach((tile) => {
+                // Is that tile a target tile? If not can we walk on it?
+                if (targetTiles.includes(tile)) {
+                    targetPaths.push([...path, tile]);
+
+                } else if (!visited.includes(tile) && isWalkableTile(tile)) {
+                    newPaths.push([...path, tile]);
+                }
+
+                if (!visited.includes(tile)) {
+                    visited.push(tile);
+                }
+            });
+        });
+
+        if (targetPaths.length > 0) {
+            // In the case we found multiple paths (all have the same length) we have to take the one which would END in reading order.
+            targetPaths.sort((pathOne, pathTwo) => {
+                let targetPathOne: Tile = pathOne[pathOne.length - 1];
+                let targetPathTwo: Tile = pathTwo[pathTwo.length - 1];
+
+                return comparePositions(targetPathOne.pos, targetPathTwo.pos);
+            });
+
+            // Return the next step of the first (selected) path.
+            return targetPaths[0][1];
+        }
+
+        paths = newPaths;
+        if (paths.length === 0) {
+            // We don't have any paths left which we could extend, so we don't have a path to that target.
+            return undefined;
+        }
+    }
+
+    // We have searched ALL tiles of the GAME_FIELD and found no path, so there is no path. However, this should NEVER happen, the method should bail out and recognice that there's no path way earlier.
+    return undefined;
 }
 
 function getPossibleTargets(entity: Entity): Entity[] {
-    return entitiesAlive.filter((ent) => ent.team !== entity.team);
+    return ENTITIES_ALIVE.filter((ent) => ent.team !== entity.team);
 }
 
-function getAdjacentEnemies(entity: Entity): Entity[] {
-    let { x, y } = entity.pos;
-    let { team } = entity;
-    let enemies: Entity[] = [];
+function getAdjacentPositions(ownPos: Position): Position[] {
+    let { x, y } = ownPos;
 
-    let ent: Entity | undefined = getEntityOnPosition({ x, y: y - 1 });
-
-    if (ent && ent.team !== team) {
-        enemies.push(ent);
-    }
-
-    ent = getEntityOnPosition({ x: x - 1, y });
-
-    if (ent && ent.team !== team) {
-        enemies.push(ent);
-    }
-
-    ent = getEntityOnPosition({ x: x + 1, y });
-
-    if (ent && ent.team !== team) {
-        enemies.push(ent);
-    }
-
-    ent = getEntityOnPosition({ x, y: y + 1 });
-
-    if (ent && ent.team !== team) {
-        enemies.push(ent);
-    }
-
-    return enemies;
+    return [
+        { x, y: y - 1 },
+        { x: x - 1, y },
+        { x: x + 1, y },
+        { x, y: y + 1 }
+    ];
 }
 
-function getAdjacentOpenTiles(entity: Entity): Position[] {
-    let pos: Position[] = [];
-    let { x, y } = entity.pos;
+function getAdjacentTiles(tile: Tile): Tile[] {
+    let adjPos: Position[] = getAdjacentPositions(tile.pos);
 
-    if (gameField[x - 1] && gameField[x - 1][y] !== '#') {
-        // Left
-        pos.push({ x: x - 1, y });
-    }
-
-    if (gameField[x + 1] && gameField[x + 1][y] !== '#') {
-        // Right
-        pos.push({ x: x + 1, y });
-    }
-
-    if (gameField[x][y - 1] && gameField[x][y - 1] !== '#') {
-        // Up
-        pos.push({ x, y: y - 1 });
-    }
-
-    if (gameField[x][y + 1] && gameField[x][y + 1] !== '#') {
-        // Down
-        pos.push({ x, y: y + 1 });
-    }
-
-    // Only return the ones which don't have entites on them.
-    return pos.filter((p) => getEntityOnPosition(p) === undefined);
+    return adjPos.map((pos) => GAME_FIELD.tiles[convertPosToString(pos)]);
 }
 
-function getEntityOnPosition(pos: Position): Entity | undefined {
-    for (let ent of entitiesAlive) {
-        if (ent.pos.x === pos.x && ent.pos.y === pos.y) {
+function getEntityAtPos(pos: Position): Entity | undefined {
+    for (let ent of ENTITIES_ALIVE) {
+        if (ent.tile.pos.x === pos.x && ent.tile.pos.y === pos.y) {
             return ent;
         }
     }
@@ -269,170 +220,155 @@ function getEntityOnPosition(pos: Position): Entity | undefined {
     return undefined;
 }
 
-function comparePositions(posA: Position, posB: Position): number {
-    if (posA.y === posB.y) {
-        return posA.x - posB.x;
-    }
-
-    return posA.y - posB.y;
+function isWalkableTile(tile: Tile): boolean {
+    return tile.isWalkable && (getEntityAtPos(tile.pos) === undefined);
 }
 
-function printGameField(currRound: number) {
-    console.log(`GameField after round ${currRound}:`);
-    let lines: string[] = new Array(gameField[0].length);
-    lines.fill('');
+function convertPosToString(pos: Position): string {
+    return `${pos.x},${pos.y}`;
+}
 
-    for (let x = 0; x < gameField.length; x++) {
-        for (let y = 0; y < gameField[x].length; y++) {
-            let symb: string = gameField[x][y];
-            let ent: Entity | undefined = getEntityOnPosition({ x, y });
+function comparePositions(a: Position, b: Position): number {
+    if (a.y === b.y) {
+        return a.x - b.x;
+    }
+
+    return a.y - b.y;
+}
+
+function printGameField(currRound: number = 0) {
+    if (SUPRESS_PRINTING) {
+        return;
+    }
+
+    console.log(`\nGameField after round ${currRound}:`);
+    let lines: string[] = new Array(GAME_FIELD.height);
+    let hpInfos: string[] = new Array(GAME_FIELD.height);
+
+    lines.fill('');
+    hpInfos.fill('');
+
+    for (let x = 0; x < GAME_FIELD.width; x++) {
+        for (let y = 0; y < GAME_FIELD.height; y++) {
+            let tile: Tile | undefined = GAME_FIELD.tiles[convertPosToString({ x, y })];
+
+            if (!tile) {
+                continue;
+            }
+
+            let symb: string = tile.isWalkable ? TILE_WALKABLE : TILE_WALL;
+            let ent: Entity | undefined = getEntityAtPos({ x, y });
 
             if (ent) {
-                if (ent.team === 'Goblin') {
-                    symb = 'G';
-                } else if (ent.team === 'Elf') {
+                if (ent.team === 'Elf') {
                     symb = 'E';
+                } else if (ent.team === 'Goblin') {
+                    symb = 'G';
                 }
+
+                hpInfos[y] += `${symb}(${ent.health}) `;
             }
 
             lines[y] += symb;
         }
     }
 
-    for (let line of lines) {
-        console.log(line);
-    }
-}
-
-function getShortestPath(start: Position, end: Position): Path {
-    let startNode: Node | undefined = pathFindingGraph.nodes.get(
-        PathfindingGraph.getStringForPosition(start)
-    );
-    let endNode: Node | undefined = pathFindingGraph.nodes.get(
-        PathfindingGraph.getStringForPosition(end)
-    );
-
-    if (!startNode || !endNode) {
-        return [];
+    for (let i = 0; i < lines.length; i++) {
+        console.log(lines[i] + '  ' + hpInfos[i]);
     }
 
-    let path: Path = [];
-    let closed: Node[] = [];
-    let open: Node[] = [startNode];
-    let cameFrom: Map<Node, Node> = new Map();
-    let gScore: Map<Node, number> = new Map();
-    let fScore: Map<Node, number> = new Map();
-
-    for (let node of pathFindingGraph.nodes.values()) {
-        gScore.set(node, Number.MAX_SAFE_INTEGER);
-        fScore.set(node, Number.MAX_SAFE_INTEGER);
-    }
-
-    gScore.set(startNode, 0);
-    fScore.set(startNode, getHeuristicDistance(startNode, endNode));
-
-    // Does one need a priotiry queue? 
-    // Because every edge has the exact same cost of 1 -- so every edge has the same priority as any other in the graph -- that's the reason (btw) why this graph does NOT have dedicated 'edge objects'.
-
-    while (open.length > 0) {
-        let current: Node = open.splice(0, 1)![0];
-
-        if (current === endNode) {
-            return reconstructPath(cameFrom, current);
-        }
-
-        closed.push(current);
-
-        for (let node of current.nodesConnected) {
-            if (closed.indexOf(node) !== -1) {
-                continue;
-            }
-
-            // We're adding one because the distance between two nodes is always 1 step.
-            let tentativeGScore = gScore.get(current)! + 1;
-
-            if (open.indexOf(node) === -1) {
-                open.push(node);
-
-            } else if (tentativeGScore >= gScore.get(node)!) {
-                // Path would be longer, so abort.
-                continue;
-            }
-
-            // This path is best path found so far.
-            cameFrom.set(node, current);
-            gScore.set(node, tentativeGScore);
-            fScore.set(node, gScore.get(node)! + getHeuristicDistance(node, endNode));
-        }
-
-        open.sort((a, b) => (fScore.get(a) || 0) - (fScore.get(b) || 0));
-    }
-
-    return path;
+    return;
 }
 
-function getHeuristicDistance(nodeA: Node, nodeB: Node): number {
-    return Math.abs(nodeA.tile.x - nodeB.tile.x) + Math.abs(nodeA.tile.y - nodeB.tile.y);
-}
-
-function reconstructPath(cameFrom: Map<Node, Node>, lastNodeInPath: Node): Path {
-    let path: Path = [lastNodeInPath.tile];
-    let prevNode: Node | undefined = cameFrom.get(lastNodeInPath);
-
-    while (prevNode) {
-        path.push(prevNode.tile);
-        prevNode = cameFrom.get(prevNode);
-    }
-
-    return path.reverse();
-}
-
-function buildPathFindingGraph(): PathfindingGraph {
-    return new PathfindingGraph(gameField);
-}
-
-// ========== RUNNING SECTION ==========
-let input: string[] = getLinesOfInput(readPuzzleInput(15, 1));
+// #region RUNNING SECTION
+let input: string[] = getLinesOfInput(readPuzzleInput(15));
 
 const START_POWER: number = 3;
 const START_HEALTH: number = 200;
 const TILE_WALL: string = '#';
 const TILE_WALKABLE: string = '.';
 
-const gameField: GameField = [];
-const entitiesAlive: Entity[] = [];
+const SUPRESS_PRINTING: boolean = true;
+let GAME_FIELD: GameField = { tiles: {}, width: 0, height: 0 };
+let ENTITIES_ALIVE: Entity[] = [];
 
-// Init the gaming field and all entities
-for (let x = 0; x < input[0].length; x++) {
-    gameField[x] = [];
+// RUN THE GAME
+function endGame(lastCompletedRound: number, part: string) {
+    let result: number = lastCompletedRound * ENTITIES_ALIVE.reduce((sum, ent) => sum + ent.health, 0);
 
-    for (let y = 0; y < input.length; y++) {
-        gameField[x][y] = input[y].charAt(x);
+    console.log(`\nPart ${part} -- Outcome of battle: ${result}`);
+}
 
-        if (gameField[x][y] === 'G') {
-            entitiesAlive.push({
-                team: 'Goblin',
-                power: START_POWER,
-                health: START_HEALTH,
-                pos: { x, y }
-            });
-
-            gameField[x][y] = TILE_WALKABLE;
-
-        } else if (gameField[x][y] === 'E') {
-            entitiesAlive.push({
-                team: 'Elf',
-                power: START_POWER,
-                health: START_HEALTH,
-                pos: { x, y }
-            });
-
-            gameField[x][y] = TILE_WALKABLE;
+function runGame(addPowerElfs: number = 0): { lastCompletedRound: number, elfsDied: number } {
+    resetGame(addPowerElfs);
+    let roundNr: number = 0;
+    let elfsAliveAtStart: number = ENTITIES_ALIVE.reduce((sum, ent) => {
+        if (ent.team === 'Elf') {
+            return sum + 1;
         }
+
+        return sum;
+    }, 0);
+
+    while (true) {
+        let aliveEntitiesAtStart: Entity[] = [...ENTITIES_ALIVE];
+
+        for (let ent of aliveEntitiesAtStart) {
+            if (ent.health <= 0) {
+                // Skip dead entities.
+                continue;
+            }
+
+            let endState: ActionEndState = takeTurn(ent);
+
+            if (endState === ActionEndState.END_GAME) {
+                let elfsAliveAtEnd: number = ENTITIES_ALIVE.reduce((sum, ent) => {
+                    if (ent.team === 'Elf') {
+                        return sum + 1;
+                    }
+
+                    return sum;
+                }, 0);
+
+                return {
+                    lastCompletedRound: roundNr,
+                    elfsDied: elfsAliveAtEnd - elfsAliveAtStart
+                };
+            }
+        }
+
+        // Adjust the turn order for the entities.
+        ENTITIES_ALIVE.sort((a, b) => comparePositions(a.tile.pos, b.tile.pos));
+
+        roundNr++;
+        printGameField(roundNr);
     }
 }
 
-let pathFindingGraph: PathfindingGraph = buildPathFindingGraph();
+function resetGame(addPowerElfs: number = 0) {
+    // Reset the game state
+    GAME_FIELD = { tiles: {}, width: 0, height: 0 };
+    ENTITIES_ALIVE = [];
 
-// Run the game
-runGame();
+    initGameField(input, addPowerElfs);
+    printGameField();
+}
+
+// Part A
+let { lastCompletedRound } = runGame(0);
+endGame(lastCompletedRound, 'A');
+
+// Part B
+
+let addPower: number = -1; // Starting at -1, because we increase first than init the GameField.
+
+while (true) {
+    let { elfsDied, lastCompletedRound } = runGame(++addPower);
+
+    if (elfsDied === 0) {
+        endGame(lastCompletedRound, 'B');
+        break;
+    }
+}
+
+// #endregion
