@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Programm starten",
-            "preLaunchTask": "watch-ts",
+            "preLaunchTask": "compile-ts",
             "program": "${workspaceFolder}/out/${fileBasenameNoExtension}.js",
             "outFiles": [
                 "${workspaceFolder}/**/*.js"
