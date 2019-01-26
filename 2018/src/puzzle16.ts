@@ -1,7 +1,7 @@
 import { readPuzzleInput, getLinesOfInput } from './util/utils';
 
-type Register = number[];
-type Operation = (r: Register, a: number, b: number, c: number) => void;
+export type Register = number[];
+export type Operation = (r: Register, a: number, b: number, c: number) => void;
 type OpData = { before: Register, after: Register, opString: string };
 type OpArgs = { a: number, b: number, c: number };
 
@@ -46,67 +46,67 @@ function areArraysEqual(a: number[], b: number[]): boolean {
 }
 
 // #region instructions
-function addr(register: Register, regAId: number, regBId: number, regCId: number) {
+export function addr(register: Register, regAId: number, regBId: number, regCId: number) {
     register[regCId] = register[regAId] + register[regBId];
 }
 
-function addi(register: Register, regAId: number, valB: number, regCId: number) {
+export function addi(register: Register, regAId: number, valB: number, regCId: number) {
     register[regCId] = register[regAId] + valB;
 }
 
-function mulr(register: Register, regAId: number, regBId: number, regCId: number) {
+export function mulr(register: Register, regAId: number, regBId: number, regCId: number) {
     register[regCId] = register[regAId] * register[regBId];
 }
 
-function muli(register: Register, regAId: number, valB: number, regCId: number) {
+export function muli(register: Register, regAId: number, valB: number, regCId: number) {
     register[regCId] = register[regAId] * valB;
 }
 
-function banr(register: Register, regAId: number, regBId: number, regCId: number) {
+export function banr(register: Register, regAId: number, regBId: number, regCId: number) {
     register[regCId] = register[regAId] & register[regBId];
 }
 
-function bani(register: Register, regAId: number, valB: number, regCId: number) {
+export function bani(register: Register, regAId: number, valB: number, regCId: number) {
     register[regCId] = register[regAId] & valB;
 }
 
-function borr(register: Register, regAId: number, regBId: number, regCId: number) {
+export function borr(register: Register, regAId: number, regBId: number, regCId: number) {
     register[regCId] = register[regAId] | register[regBId];
 }
 
-function bori(register: Register, regAId: number, valB: number, regCId: number) {
+export function bori(register: Register, regAId: number, valB: number, regCId: number) {
     register[regCId] = register[regAId] | valB;
 }
 
-function setr(register: Register, regAId: number, _: number, regCId: number) {
+export function setr(register: Register, regAId: number, _: number, regCId: number) {
     register[regCId] = register[regAId];
 }
 
-function seti(register: Register, valA: number, _: number, regCId: number) {
+export function seti(register: Register, valA: number, _: number, regCId: number) {
     register[regCId] = valA;
 }
 
-function gtir(register: Register, valA: number, regBId: number, regCId: number) {
+export function gtir(register: Register, valA: number, regBId: number, regCId: number) {
     register[regCId] = (valA > register[regBId]) ? 1 : 0;
 }
 
-function gtri(register: Register, regAId: number, valB: number, regCId: number) {
+export function gtri(register: Register, regAId: number, valB: number, regCId: number) {
     register[regCId] = (register[regAId] > valB) ? 1 : 0;
 }
 
-function gtrr(register: Register, regAId: number, regBId: number, regCId: number) {
+export function gtrr(register: Register, regAId: number, regBId: number, regCId: number) {
     register[regCId] = (register[regAId] > register[regBId]) ? 1 : 0;
 }
 
-function eqir(register: Register, valA: number, regBId: number, regCId: number) {
+export function eqir(register: Register, valA: number, regBId: number, regCId: number) {
     register[regCId] = (valA === register[regBId]) ? 1 : 0;
 }
 
-function eqri(register: Register, regAId: number, valB: number, regCId: number) {
+export function eqri(register: Register, regAId: number, valB: number, regCId: number) {
     register[regCId] = (register[regAId] === valB) ? 1 : 0;
 }
 
-function eqrr(register: Register, regAId: number, regBId: number, regCId: number) {
+export function eqrr(register: Register, regAId: number, regBId: number, regCId: number) {
     register[regCId] = (register[regAId] === register[regBId]) ? 1 : 0;
 }
 // #endregion
