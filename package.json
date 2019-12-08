@@ -15,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/lodash": "^4.14.149",
     "@types/node": "^10.12.18",
     "@typescript-eslint/eslint-plugin": "^2.9.0",
     "@typescript-eslint/parser": "^2.9.0",
@@ -25,5 +26,8 @@
     "ts-node": "^8.5.4",
     "typescript": "^3.7.2"
   },
-  "currentYear": 2019
+  "currentYear": 2019,
+  "dependencies": {
+    "lodash": "^4.17.15"
+  }
 }
