@@ -1,10 +1,5 @@
 import { readPuzzleInput } from '../util/utils';
 
-interface ProgramReturn {
-  isFinished: boolean;
-  store: number[];
-}
-
 class IntcodeComputer {
   private store: number[];
   private currentPosition: number;
