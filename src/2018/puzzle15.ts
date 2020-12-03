@@ -4,7 +4,7 @@
  * Reddit: https://www.reddit.com/r/adventofcode/comments/a6chwa/2018_day_15_solutions/ebuaht5
  * GitHub: https://github.com/albertobastos/advent-of-code-2018-nodejs/blob/master/src/d15.js
  */
-import { getLinesOfInput, readPuzzleInput } from '../util/utils';
+import { getLinesOfInput, readPuzzleInput } from '../util/PuzzleInputReader';
 
 type Position = { x: number; y: number };
 type Tile = { pos: Position; isWalkable: boolean };

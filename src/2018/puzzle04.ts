@@ -1,4 +1,4 @@
-import { getLinesOfInput, readPuzzleInput } from '../util/utils';
+import { getLinesOfInput, readPuzzleInput } from '../util/PuzzleInputReader';
 
 // let testInput: string = `
 // [1518-11-01 00:00] Guard #10 begins shift

@@ -1,4 +1,4 @@
-import { getLinesOfInput, readPuzzleInput } from '../util/utils';
+import { getLinesOfInput, readPuzzleInput } from '../util/PuzzleInputReader';
 import _ from 'lodash';
 
 class Galaxy {

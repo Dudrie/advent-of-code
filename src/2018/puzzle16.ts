@@ -1,4 +1,4 @@
-import { readPuzzleInput, getLinesOfInput } from '../util/utils';
+import { readPuzzleInput, getLinesOfInput } from '../util/PuzzleInputReader';
 
 export type Register = number[];
 export type Operation = (r: Register, a: number, b: number, c: number) => void;

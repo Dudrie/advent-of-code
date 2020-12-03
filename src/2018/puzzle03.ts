@@ -3,7 +3,7 @@
  *
  * Source: https://www.reddit.com/r/adventofcode/comments/a2lesz/2018_day_3_solutions/eazgkm2
  */
-import { getLinesOfInput, readPuzzleInput } from '../util/utils';
+import { getLinesOfInput, readPuzzleInput } from '../util/PuzzleInputReader';
 
 const claims: string[] = getLinesOfInput(readPuzzleInput(3));
 // claims = [

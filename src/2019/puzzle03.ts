@@ -1,4 +1,4 @@
-import { readPuzzleInput, getLinesOfInput } from '../util/utils';
+import { readPuzzleInput, getLinesOfInput } from '../util/PuzzleInputReader';
 
 type WireGrid = { [pos: string]: Wire[] };
 

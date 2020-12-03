@@ -1,4 +1,4 @@
-import { readPuzzleInput, getLinesOfInput } from '../util/utils';
+import { readPuzzleInput, getLinesOfInput } from '../util/PuzzleInputReader';
 
 function calcFuelOfModule(mod: number): number {
   return Math.floor(mod / 3) - 2;

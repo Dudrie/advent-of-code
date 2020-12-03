@@ -1,4 +1,4 @@
-import { readPuzzleInput } from '../util/utils';
+import { readPuzzleInput } from '../util/PuzzleInputReader';
 
 interface ProgramReturn {
   isFinished: boolean;

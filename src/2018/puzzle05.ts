@@ -1,4 +1,4 @@
-import { readPuzzleInput } from '../util/utils';
+import { readPuzzleInput } from '../util/PuzzleInputReader';
 
 /** Thats the (absolute) difference between the charCode of a small letter and it's big variant. */
 const CHAR_CODE_DIFF: number = 32;

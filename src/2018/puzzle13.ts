@@ -3,7 +3,7 @@
  *
  * Q: https://www.reddit.com/r/adventofcode/comments/a5qd71/2018_day_13_solutions/ebolyq6
  */
-import { getLinesOfInput, readPuzzleInput } from '../util/utils';
+import { getLinesOfInput, readPuzzleInput } from '../util/PuzzleInputReader';
 
 enum Direction {
   NORTH,

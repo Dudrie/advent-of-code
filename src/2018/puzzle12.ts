@@ -2,7 +2,7 @@
  * Part B was solved using the underlying idea of sophiebits from the subreddit to search for a pattern within the amount that gets added to the sum with each iteration.
  * Q: https://www.reddit.com/r/adventofcode/comments/a5eztl/2018_day_12_solutions/ebm4c9d
  */
-import { readPuzzleInput, getLinesOfInput } from '../util/utils';
+import { readPuzzleInput, getLinesOfInput } from '../util/PuzzleInputReader';
 
 const initialState: string =
   '###......#.#........##.###.####......#..#####.####..#.###..#.###.#..#..#.#..#..#.##...#..##......#.#';

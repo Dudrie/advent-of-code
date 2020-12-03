@@ -1,4 +1,4 @@
-import { readPuzzleInput, getLinesOfInput } from '../util/utils';
+import { readPuzzleInput, getLinesOfInput } from '../util/PuzzleInputReader';
 
 const input: string = readPuzzleInput(1);
 

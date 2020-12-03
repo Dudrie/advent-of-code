@@ -1,8 +1,8 @@
-import { PuzzleInputReader } from '../util/utils';
+import { PuzzleInputReader } from '../util/PuzzleInputReader';
 
 const numbers: number[] = new PuzzleInputReader(1)
   .getPuzzleInputSplitByLines()
-  .map((s) => Number.parseInt(s, 10));
+  .map(s => Number.parseInt(s, 10));
 
 let productA: number = 0;
 let productB: number = 0;

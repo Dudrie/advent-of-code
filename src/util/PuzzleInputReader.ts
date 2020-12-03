@@ -31,7 +31,7 @@ export class PuzzleInputReader {
    * @returns The loaded puzzle input split by lines.
    */
   public getPuzzleInputSplitByLines(): string[] {
-    return this.input.split(/\r\n|\r|\n/).filter((line) => line !== '');
+    return this.input.split(/\r\n|\r|\n/).filter(line => line !== '');
   }
 
   private loadInput(): string {
@@ -84,7 +84,7 @@ export function readPuzzleInput(puzzleNumber: number, testNr: number = 0): strin
  * @returns Array with strings in which every (previous) line is an entry
  */
 export function getLinesOfInput(input: string): string[] {
-  return input.split(/\r\n|\r|\n/).filter((line) => line !== '');
+  return input.split(/\r\n|\r|\n/).filter(line => line !== '');
 }
 
 /**
