@@ -16,7 +16,7 @@ class Password {
   constructor(savedPassword: string) {
     const [policy, password] = savedPassword.split(':');
     const [counts, symbol] = policy.split(' ');
-    const [minCount, maxCount] = counts.split('-').map(n => Number.parseInt(n, 10));
+    const [minCount, maxCount] = counts.split('-').map((n) => Number.parseInt(n, 10));
 
     this.policy = { symbol, minCount, maxCount };
     this.password = password.trim();
@@ -27,7 +27,7 @@ class Password {
 
   private checkValidityPartA(): boolean {
     const { minCount, maxCount, symbol } = this.policy;
-    const count = this.password.split('').filter(c => c === symbol).length;
+    const count = this.password.split('').filter((c) => c === symbol).length;
 
     return minCount <= count && count <= maxCount;
   }
@@ -45,8 +45,8 @@ class Password {
 
 const lines: string[] = new PuzzleInputReader(2).getPuzzleInputSplitByLines();
 
-const passwords: Password[] = lines.map(l => new Password(l));
-const validPasswords: Password[] = passwords.filter(p => p.isValidA);
+const passwords: Password[] = lines.map((l) => new Password(l));
+const validPasswords: Password[] = passwords.filter((p) => p.isValidA);
 
 console.log(`Solution A: ${validPasswords.length}`);
-console.log(`Solution B: ${passwords.filter(p => p.isValidB).length}`);
+console.log(`Solution B: ${passwords.filter((p) => p.isValidB).length}`);

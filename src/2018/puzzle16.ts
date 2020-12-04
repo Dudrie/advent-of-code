@@ -11,7 +11,7 @@ function parseRegisterLine(line: string): Register {
     .split(':')[1]
     .replace(/\[|\]/, '')
     .split(',')
-    .map(v => Number.parseInt(v));
+    .map((v) => Number.parseInt(v));
 
   return [nums[0], nums[1], nums[2], nums[3]];
 }
@@ -160,7 +160,7 @@ for (const opData of pastOperations) {
   let countResultOfOp: number = 0;
   const { before, after, opString: op } = opData;
 
-  const [opId, a, b, c] = op.split(' ').map(v => Number.parseInt(v));
+  const [opId, a, b, c] = op.split(' ').map((v) => Number.parseInt(v));
   const args: OpArgs = { a, b, c };
 
   for (const op of ALL_OPS) {
@@ -242,13 +242,13 @@ while (entries.length > 0) {
   }
 
   // Only take the entries with at least one possible operation into the next step.
-  entries = entries.filter(val => val[1].length > 0);
+  entries = entries.filter((val) => val[1].length > 0);
 }
 
 let register: Register = [0, 0, 0, 0];
 
 for (const testLine of inputTestProg) {
-  const [opId, a, b, c] = testLine.split(' ').map(v => Number.parseInt(v));
+  const [opId, a, b, c] = testLine.split(' ').map((v) => Number.parseInt(v));
   const operationToRun: Operation | undefined = mapIdToOp.get(`${opId}`);
 
   if (!operationToRun) {

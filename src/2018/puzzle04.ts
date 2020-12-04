@@ -110,8 +110,9 @@ for (const key of Object.keys(mostTiredSleepMinutes)) {
 }
 
 console.log(
-  `PART A -- Answer is: ${mostTiredGuard.id} * ${minuteMostAsleep} = ${mostTiredGuard.id *
-    minuteMostAsleep}`
+  `PART A -- Answer is: ${mostTiredGuard.id} * ${minuteMostAsleep} = ${
+    mostTiredGuard.id * minuteMostAsleep
+  }`
 );
 
 // Part B
@@ -130,8 +131,9 @@ for (const key in sleepMinutes) {
 }
 
 console.log(
-  `Part B -- Answer is: ${mostInOneMinuteId} * ${currentMax.minute} = ${mostInOneMinuteId *
-    currentMax.minute}`
+  `Part B -- Answer is: ${mostInOneMinuteId} * ${currentMax.minute} = ${
+    mostInOneMinuteId * currentMax.minute
+  }`
 );
 
 // ========== HELPERS ==========

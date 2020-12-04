@@ -14,7 +14,7 @@ const claims: string[] = getLinesOfInput(readPuzzleInput(3));
 
 // Part A
 console.log('Calculating part A');
-const recs: Rectangle[] = claims.map(input => createRectangleFromInput(input));
+const recs: Rectangle[] = claims.map((input) => createRectangleFromInput(input));
 
 console.log(`Rectangle count: ${recs.length}`);
 

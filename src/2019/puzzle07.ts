@@ -16,7 +16,7 @@ class IntcodeComputer {
   private state: State;
 
   constructor(instruction: string) {
-    this.store = instruction.split(',').map(i => Number.parseInt(i, 10));
+    this.store = instruction.split(',').map((i) => Number.parseInt(i, 10));
     this.currentPosition = 0;
     this.output = 0;
 
@@ -52,7 +52,7 @@ class IntcodeComputer {
       .substr(0, instruction.length - 2)
       .split('')
       .reverse()
-      .map(s => Number.parseInt(s));
+      .map((s) => Number.parseInt(s));
 
     switch (opCode) {
       case 99:

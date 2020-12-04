@@ -62,7 +62,7 @@ function calculcateWirePath(
 
   const instructions = wirePathInput.split(',');
 
-  instructions.forEach(instruction => {
+  instructions.forEach((instruction) => {
     const direction: string = instruction.substring(0, 1);
     const steps: number = Number.parseInt(instruction.substring(1));
 

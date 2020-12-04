@@ -40,7 +40,7 @@ const input: string = readPuzzleInput(10);
 // `;
 
 const lines: string[] = getLinesOfInput(input);
-let stars: Star[] = lines.map(l => createStar(l));
+let stars: Star[] = lines.map((l) => createStar(l));
 
 let minDrawingRec: Rectangle = calcDrawingArea(stars);
 let minArea: number = calcRectangleArea(minDrawingRec);
@@ -65,7 +65,7 @@ while (hasGottenSmaller) {
   s += 1;
 }
 
-stars = lines.map(l => createStar(l));
+stars = lines.map((l) => createStar(l));
 
 for (let i = 1; i <= idx; i++) {
   moveStars(stars);
@@ -84,7 +84,7 @@ function createStar(line: string): Star {
     throw new Error(`Non parsable line: "${line}"`);
   }
 
-  const [, x, y, dx, dy]: number[] = result.map(r => Number.parseInt(r));
+  const [, x, y, dx, dy]: number[] = result.map((r) => Number.parseInt(r));
 
   return {
     pos: { x, y },
@@ -95,12 +95,12 @@ function createStar(line: string): Star {
 function calcDrawingArea(stars: Star[]): Rectangle {
   return {
     topLeft: {
-      x: Math.min(...stars.map(s => s.pos.x)),
-      y: Math.min(...stars.map(s => s.pos.y)),
+      x: Math.min(...stars.map((s) => s.pos.x)),
+      y: Math.min(...stars.map((s) => s.pos.y)),
     },
     botRight: {
-      x: Math.max(...stars.map(s => s.pos.x)),
-      y: Math.max(...stars.map(s => s.pos.y)),
+      x: Math.max(...stars.map((s) => s.pos.x)),
+      y: Math.max(...stars.map((s) => s.pos.y)),
     },
   };
 }
@@ -113,7 +113,7 @@ function printStars(stars: Star[], area: Rectangle): boolean {
   }
 
   let couldPrintAllStars: boolean = true;
-  stars.forEach(star => {
+  stars.forEach((star) => {
     const { x, y } = star.pos;
 
     if (

@@ -134,7 +134,7 @@ function moveToEnemy(entity: Entity, posTargets: Entity[]) {
 
 function findNextMove(entity: Entity, posTargets: Entity[]): Tile | undefined {
   let paths: Tile[][] = [];
-  const targetTiles: Tile[] = posTargets.map(t => t.tile);
+  const targetTiles: Tile[] = posTargets.map((t) => t.tile);
   const visited: Tile[] = [];
 
   // We start at the position of the entity
@@ -149,9 +149,9 @@ function findNextMove(entity: Entity, posTargets: Entity[]): Tile | undefined {
     const targetPaths: Tile[][] = [];
 
     // We'll extend every path (if possible) by adding the next step to it.
-    paths.forEach(path => {
+    paths.forEach((path) => {
       const adjTiles: Tile[] = getAdjacentTiles(path[path.length - 1]);
-      adjTiles.forEach(tile => {
+      adjTiles.forEach((tile) => {
         // Is that tile a target tile? If not can we walk on it?
         if (targetTiles.includes(tile)) {
           targetPaths.push([...path, tile]);
@@ -190,7 +190,7 @@ function findNextMove(entity: Entity, posTargets: Entity[]): Tile | undefined {
 }
 
 function getPossibleTargets(entity: Entity): Entity[] {
-  return ENTITIES_ALIVE.filter(ent => ent.team !== entity.team);
+  return ENTITIES_ALIVE.filter((ent) => ent.team !== entity.team);
 }
 
 function getAdjacentPositions(ownPos: Position): Position[] {
@@ -207,7 +207,7 @@ function getAdjacentPositions(ownPos: Position): Position[] {
 function getAdjacentTiles(tile: Tile): Tile[] {
   const adjPos: Position[] = getAdjacentPositions(tile.pos);
 
-  return adjPos.map(pos => GAME_FIELD.tiles[convertPosToString(pos)]);
+  return adjPos.map((pos) => GAME_FIELD.tiles[convertPosToString(pos)]);
 }
 
 function getEntityAtPos(pos: Position): Entity | undefined {

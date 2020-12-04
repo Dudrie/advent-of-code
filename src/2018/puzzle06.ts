@@ -11,12 +11,12 @@ const input: string[] = getLinesOfInput(readPuzzleInput(6));
 // `);
 
 const points: Point[] = [];
-input.forEach(i => points.push(parseLineOfInput(i)));
+input.forEach((i) => points.push(parseLineOfInput(i)));
 
 const topLeft: Point = { x: Number.MAX_SAFE_INTEGER, y: Number.MAX_SAFE_INTEGER };
 const bottomRight: Point = { x: Number.MIN_SAFE_INTEGER, y: Number.MIN_SAFE_INTEGER };
 
-points.forEach(p => {
+points.forEach((p) => {
   if (p.x < topLeft.x) {
     topLeft.x = p.x;
   } else if (p.x > bottomRight.x) {
@@ -55,7 +55,7 @@ const pointsToTest: Point[] = [
   { x: bottomRight.x + offset, y: bottomRight.y + offset }, // BotRight
 ];
 
-pointsToTest.forEach(pt => {
+pointsToTest.forEach((pt) => {
   const { pt: ptWithMinDist } = getPointWithMinDistance(pt, points);
 
   areaOfPoint[pointToString(ptWithMinDist)] = Number.POSITIVE_INFINITY;
@@ -79,7 +79,7 @@ for (let x = topLeft.x; x <= bottomRight.x; x++) {
   for (let y = topLeft.y; y <= bottomRight.y; y++) {
     let distSum: number = 0;
 
-    points.forEach(pt => (distSum += calcManhattanDistance(pt, { x, y })));
+    points.forEach((pt) => (distSum += calcManhattanDistance(pt, { x, y })));
 
     if (distSum < maxDistance) {
       pointsInArea += 1;
@@ -95,7 +95,7 @@ console.log(
 type Point = { x: number; y: number };
 
 function parseLineOfInput(line: string): Point {
-  const result: string[] = line.split(',').map(s => s.trim());
+  const result: string[] = line.split(',').map((s) => s.trim());
 
   if (!result) {
     throw new Error('ERROR! CALL SANTA IMMEDIATLY!');

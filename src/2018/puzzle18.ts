@@ -207,7 +207,7 @@ function deepCopy<T>(obj: T): T {
   if (typeof obj === 'object' && obj !== {}) {
     const cp: { [key: string]: any } = { ...(obj as { [key: string]: any }) };
 
-    Object.keys(cp).forEach(key => {
+    Object.keys(cp).forEach((key) => {
       cp[key] = deepCopy(cp[key]);
     });
 

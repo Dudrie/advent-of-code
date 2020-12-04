@@ -15,7 +15,7 @@ function calcFuelOfModuleAndFuel(mod: number): number {
 }
 
 const input = readPuzzleInput(1);
-const modules: number[] = getLinesOfInput(input).map(line => Number.parseInt(line, 10));
+const modules: number[] = getLinesOfInput(input).map((line) => Number.parseInt(line, 10));
 const totalFuel = modules.reduce((mass, module) => mass + calcFuelOfModuleAndFuel(module), 0);
 
 console.log(`A: Total fuel is ${totalFuel}`);

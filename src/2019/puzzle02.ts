@@ -49,7 +49,7 @@ function runProgramm(state: number[], [noun, verb]: [number, number]): number {
 
 const initialState: number[] = readPuzzleInput(2)
   .split(',')
-  .map(i => Number.parseInt(i, 10));
+  .map((i) => Number.parseInt(i, 10));
 
 const resultA = runProgramm([...initialState], [12, 2]);
 

@@ -10,8 +10,8 @@ const input: string[] = getLinesOfInput(readPuzzleInput(12));
 
 type Patterns = { [pattern: string]: string };
 const patterns: Patterns = {};
-input.forEach(line => {
-  const [pattern, result]: string[] = line.split('=>').map(i => i.trim());
+input.forEach((line) => {
+  const [pattern, result]: string[] = line.split('=>').map((i) => i.trim());
   patterns[pattern] = result;
 });
 

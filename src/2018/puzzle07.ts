@@ -23,11 +23,11 @@ while (startingNodes.length !== 0) {
 
   order.push(currNode);
 
-  currNode.followingNodesIds.forEach(id => {
+  currNode.followingNodesIds.forEach((id) => {
     const node: Node | undefined = nodesMap.get(id);
 
     if (node) {
-      if (startingNodes.findIndex(n => n.id === id) === -1) {
+      if (startingNodes.findIndex((n) => n.id === id) === -1) {
         // Node exists (safety thing bc of undefined, ...) AND it is NOT in the array of startingNodes
         startingNodes.push(node);
       }
@@ -94,7 +94,7 @@ while (startingNodes.length > 0 || workingWorkers.length > 0) {
   // Advance the time to the endTime of the finished worker and reduce the incoming edge count for all his 'childs' by 1. If that child's count is 0 then add it to the array of starting nodes -- it can now be worked on.
   currTime = finishedWorker.endTime;
 
-  nodesMap.get(finishedWorker.idOfTask)!.followingNodesIds.forEach(nodeId => {
+  nodesMap.get(finishedWorker.idOfTask)!.followingNodesIds.forEach((nodeId) => {
     const node: Node | undefined = nodesMap.get(nodeId);
 
     if (node) {
@@ -117,7 +117,7 @@ function buildGraphMap(input: string[]): Map<string, Node> {
   const regex: RegExp = /Step ([A-Z]) must be finished before step ([A-Z]) can begin\./;
   const nodesMap: Map<string, Node> = new Map();
 
-  input.forEach(line => {
+  input.forEach((line) => {
     const res: string[] | null = regex.exec(line);
 
     if (res) {

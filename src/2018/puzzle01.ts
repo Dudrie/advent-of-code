@@ -2,11 +2,11 @@ import { readPuzzleInput, getLinesOfInput } from '../util/PuzzleInputReader';
 
 const input: string = readPuzzleInput(1);
 
-const freqChanges: number[] = getLinesOfInput(input).map(str => Number.parseInt(str));
+const freqChanges: number[] = getLinesOfInput(input).map((str) => Number.parseInt(str));
 let frequency: number = 0;
 
 // Part 1
-freqChanges.forEach(ch => (frequency += ch));
+freqChanges.forEach((ch) => (frequency += ch));
 console.log(`Part 1 -- Frequency: ${frequency}`);
 
 // Part 2

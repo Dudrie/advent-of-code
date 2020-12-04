@@ -8,7 +8,7 @@ console.log('Calculation Part A...');
 let withTwo: number = 0;
 let withThree: number = 0;
 
-boxIds.forEach(id => {
+boxIds.forEach((id) => {
   if (hasLetterGivenTimes(2, id)) {
     withTwo += 1;
   }

@@ -53,7 +53,7 @@ class Galaxy {
 
   private buildOrbits(input: string[]) {
     input
-      .map(instruction => instruction.split(')'))
+      .map((instruction) => instruction.split(')'))
       .forEach(([inner, outer]) => {
         this.addOrbit(inner, outer);
       });

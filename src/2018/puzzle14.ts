@@ -26,7 +26,7 @@ const inputLength: number = input.toString().length;
 const wantedRecipes: number[] = input
   .toString()
   .split('')
-  .map(n => Number.parseInt(n));
+  .map((n) => Number.parseInt(n));
 
 while (recipes.length < inputLength) {
   const { firstElf: first, secondElf: second } = generateRecipes(recipes, firstElf, secondElf);

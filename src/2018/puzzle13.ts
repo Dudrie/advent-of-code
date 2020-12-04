@@ -66,7 +66,7 @@ while (carts.length > 1) {
 
     moveCart(cart, field);
 
-    const crashedWithIdx: number = carts.findIndex(val => {
+    const crashedWithIdx: number = carts.findIndex((val) => {
       return cart.id !== val.id && compareCarts(cart, val) === 0;
     });
 

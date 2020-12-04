@@ -23,7 +23,7 @@ import {
 function runLine(line: string) {
   const lineParts: string[] = line.split(' ');
   const opName: string = lineParts.splice(0, 1)[0];
-  const nums: number[] = lineParts.map(v => Number.parseInt(v));
+  const nums: number[] = lineParts.map((v) => Number.parseInt(v));
 
   operations[opName](register, nums[0], nums[1], nums[2]);
 }

@@ -3,7 +3,7 @@ import { readPuzzleInput } from '../util/PuzzleInputReader';
 const input = readPuzzleInput(8);
 // input = '2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2';
 
-const data: number[] = input.split(/\s/).map(v => Number.parseInt(v));
+const data: number[] = input.split(/\s/).map((v) => Number.parseInt(v));
 const { node: root } = createNodeFromIndex(0, data);
 
 console.log(`Part A -- Sum of metadata: ${calcSumOfMetadata(root)}`);

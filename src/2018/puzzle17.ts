@@ -19,7 +19,7 @@ type Field = {
 };
 
 function parseInputLine(line: string) {
-  const coordData: string[] = line.split(',').map(c => c.trim());
+  const coordData: string[] = line.split(',').map((c) => c.trim());
   const coords = { startX: 0, endX: 0, startY: 0, endY: 0 };
 
   for (const data of coordData) {
@@ -27,7 +27,7 @@ function parseInputLine(line: string) {
     const nums: number[] = data
       .split('=')[1]
       .split('..')
-      .map(v => Number.parseInt(v));
+      .map((v) => Number.parseInt(v));
 
     if (id === 'x') {
       coords.startX = nums[0];
