@@ -28,10 +28,17 @@ export class PuzzleInputReader {
   }
 
   /**
-   * @returns The loaded puzzle input split by lines.
+   * @returns The loaded puzzle input split by lines with empty lines __removed__ from the list.
    */
   public getPuzzleInputSplitByLines(): string[] {
-    return this.input.split(/\r\n|\r|\n/).filter((line) => line !== '');
+    return this.getPuzzleInputSplitByLinesWithEmptyLines().filter((line) => line !== '');
+  }
+
+  /**
+   * @returns The loaded puzzle input split by lines with empty lines __kept__ in the list.
+   */
+  public getPuzzleInputSplitByLinesWithEmptyLines(): string[] {
+    return this.input.split(/\r\n|\r|\n/);
   }
 
   private loadInput(): string {
