@@ -3,7 +3,7 @@ Repo of my [Advent of Code](https://adventofcode.com/) solutions
 
 # Run puzzle solution
 
-The project is configured to run the current file in csvode on execution.
+The project is configured to run the current file in vscode on execution.
 
 # Generate puzzle files
 
