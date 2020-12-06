@@ -100,23 +100,11 @@ class PuzzleSolver04 extends PuzzleSolver {
   }
 
   private loadPassports() {
-    const lines: string[] = this.inputReader.getPuzzleInputSplitByLinesWithEmptyLines();
-    let data: string[] = [];
+    const passportData = this.inputReader.getPuzzleInputGroupedByEmptyLines();
 
-    for (const line of lines) {
-      if (line === '') {
-        // We found a new line so the end of a passport.
-        this.passports.push(new Passport(data));
-        data = [];
-      } else {
-        data.push(line);
-      }
-    }
-
-    // Make sure we add the last passport of the file aswell
-    if (data.length > 0) {
+    passportData.forEach((data) => {
       this.passports.push(new Passport(data));
-    }
+    });
   }
 }
 

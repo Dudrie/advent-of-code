@@ -35,9 +35,31 @@ export class PuzzleInputReader {
   }
 
   /**
+   * Returns the input parsed into blocks.
+   *
+   * Every block is determined by a new line in the input.
+   *
+   * @returns Blocks from input.
+   */
+  public getPuzzleInputGroupedByEmptyLines(): string[][] {
+    return this.getPuzzleInputSplitByLinesWithEmptyLines().reduce<string[][]>(
+      (grouped, currentLine) => {
+        if (currentLine === '') {
+          grouped[grouped.length] = [];
+        } else {
+          grouped[grouped.length - 1].push(currentLine);
+        }
+
+        return grouped;
+      },
+      [[]]
+    );
+  }
+
+  /**
    * @returns The loaded puzzle input split by lines with empty lines __kept__ in the list.
    */
-  public getPuzzleInputSplitByLinesWithEmptyLines(): string[] {
+  private getPuzzleInputSplitByLinesWithEmptyLines(): string[] {
     return this.input.split(/\r\n|\r|\n/);
   }
 
