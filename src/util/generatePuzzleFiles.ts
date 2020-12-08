@@ -8,7 +8,7 @@ import pkg from '../../package.json';
  */
 const TEMPLATE_CODE = (puzzleNo: string | number) => {
   const paddedPuzzleNo: string = puzzleNo.toString(10).padStart(2, '0');
-  return `import { PuzzleSolver } from '../util/PuzzleSolver';
+  return `import { PuzzleSolver } from '../../util/PuzzleSolver';
 
 class PuzzleSolver${paddedPuzzleNo} extends PuzzleSolver {
   constructor() {
@@ -45,9 +45,13 @@ class PuzzleConstructor {
    */
   generateFiles(): void {
     const folder = this.getFolderPath();
-    const puzzleName = `puzzle${this.puzzleNo.toString(10).padStart(2, '0')}`;
+    const puzzleName = this.getPuzzleName();
     const puzzleFile = path.resolve(folder, `${puzzleName}.ts`);
-    const inputFile = path.resolve(folder, 'input', `${puzzleName}.txt`);
+    const inputFile = path.resolve(folder, `${puzzleName}.txt`);
+
+    if (!fs.existsSync(folder)) {
+      fs.mkdirSync(folder, { recursive: true });
+    }
 
     fs.writeFileSync(puzzleFile, this.getPuzzleFileTemplate(), { encoding: 'utf-8' });
     console.log(`Puzzle file created: ${puzzleFile}.`);
@@ -60,7 +64,14 @@ class PuzzleConstructor {
    * @returns Path to the folder containin the puzzle file and the input (in a subfolder).
    */
   private getFolderPath(): string {
-    return path.resolve(__dirname, '..', `${this.currentYear}`);
+    return path.resolve(__dirname, '..', `${this.currentYear}`, this.getPuzzleName());
+  }
+
+  /**
+   * @returns Name of this puzzle in the format 'puzzle<number>'.
+   */
+  private getPuzzleName(): string {
+    return `puzzle${this.puzzleNo.toString(10).padStart(2, '0')}`;
   }
 
   /**

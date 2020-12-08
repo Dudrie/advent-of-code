@@ -15,8 +15,13 @@ export class PuzzleInputReader {
    *
    * @param puzzleNumber Number of the puzzle of which the input file should be read
    * @param testNr (default: 0) Determines if and which test input to load which is set by the number. The number has to be higher than 0 and there has to exist a file ending with 'TestXX' where 'XX' is the number.
+   * @param loadFromInput Indicates that the input should be loaded using the old approach.
    */
-  constructor(private readonly puzzleNumber: number, private readonly testNr: number = 0) {
+  constructor(
+    private readonly puzzleNumber: number,
+    private readonly testNr: number = 0,
+    private readonly loadFromInput: boolean = false
+  ) {
     this.input = this.loadInput();
   }
 
@@ -73,7 +78,7 @@ export class PuzzleInputReader {
         __dirname,
         '..',
         `${pkg.currentYear}`,
-        'input',
+        this.loadFromInput ? 'input' : `puzzle${numString}`,
         `puzzle${numString}${testString}.txt`
       )
     );
@@ -99,7 +104,7 @@ export class PuzzleInputReader {
  * @returns Puzzle input as String
  */
 export function readPuzzleInput(puzzleNumber: number, testNr: number = 0): string {
-  return new PuzzleInputReader(puzzleNumber, testNr).getPuzzleInput();
+  return new PuzzleInputReader(puzzleNumber, testNr, true).getPuzzleInput();
 }
 
 /**
@@ -123,7 +128,7 @@ export function getLinesOfInput(input: string): string[] {
  *
  * @param map Map to print to console
  */
-export function printMap(map: Map<any, any>) {
+export function printMap(map: Map<any, any>): void {
   const it = map.entries();
   let next = it.next();
 
