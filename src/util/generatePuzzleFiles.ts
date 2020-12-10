@@ -20,7 +20,10 @@ class PuzzleSolver${paddedPuzzleNo} extends PuzzleSolver {
   }
 }
 
+const time = Date.now();
 new PuzzleSolver${paddedPuzzleNo}().solve();
+const endTime = Date.now();
+console.log(\`Solved in: \${endTime - time}ms\`);
 `;
 };
 
@@ -48,6 +51,7 @@ class PuzzleConstructor {
     const puzzleName = this.getPuzzleName();
     const puzzleFile = path.resolve(folder, `${puzzleName}.ts`);
     const inputFile = path.resolve(folder, `${puzzleName}.txt`);
+    const testFile = path.resolve(folder, `${puzzleName}Test01.txt`);
 
     if (!fs.existsSync(folder)) {
       fs.mkdirSync(folder, { recursive: true });
@@ -58,6 +62,9 @@ class PuzzleConstructor {
 
     fs.writeFileSync(inputFile, '', { encoding: 'utf-8' });
     console.log(`Empty input file created: ${inputFile}.`);
+
+    fs.writeFileSync(testFile, '', { encoding: 'utf-8' });
+    console.log(`Empty test input file created: ${testFile}.`);
   }
 
   /**

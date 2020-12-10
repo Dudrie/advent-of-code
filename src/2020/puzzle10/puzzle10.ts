@@ -116,4 +116,7 @@ class PuzzleSolver10 extends PuzzleSolver {
   }
 }
 
+const time = Date.now();
 new PuzzleSolver10().solve();
+const endTime = Date.now();
+console.log(`Solved in: ${endTime - time}ms`);
