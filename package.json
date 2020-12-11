@@ -5,6 +5,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "gPuzzle": "ts-node ./src/util/generatePuzzleFiles.ts",
     "eslint:check": "eslint \"src/**/*.ts?(x)\"",
     "format": "eslint --fix \"src/**/*.ts?(x)\"",

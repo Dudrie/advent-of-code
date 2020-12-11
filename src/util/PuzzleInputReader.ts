@@ -9,7 +9,7 @@ export class PuzzleInputReader {
   private readonly input: string;
 
   /**
-   * Initiliazes the reader by loading the input of the given puzzle.
+   * Initializes the reader by loading the input of the given puzzle.
    *
    * Reads the corresponding input file of the given puzzle by translating the puzzleNumber to a string. If the puzzleNumber does not have 2 digits a leading 0 will be added.
    *

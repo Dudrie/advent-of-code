@@ -12,7 +12,7 @@ export abstract class PuzzleSolver {
     return this._inputReader;
   }
 
-  constructor(puzzleNumber: number) {
+  protected constructor(puzzleNumber: number) {
     this._inputReader = new PuzzleInputReader(puzzleNumber);
     this.puzzleNumber = puzzleNumber;
   }
