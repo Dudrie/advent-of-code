@@ -1,0 +1,285 @@
+import { Tile, TileType } from './Tile';
+
+export enum GenerationMethod {
+  GAME_OF_LIFE,
+  VISIBILITY,
+}
+
+class PositionVector {
+  constructor(readonly rowDelta: number, readonly columnDelta: number) {}
+
+  static north(): PositionVector {
+    return new PositionVector(-1, 0);
+  }
+
+  static northEast(): PositionVector {
+    return new PositionVector(-1, 1);
+  }
+
+  static east(): PositionVector {
+    return new PositionVector(0, 1);
+  }
+
+  static southEast(): PositionVector {
+    return new PositionVector(1, 1);
+  }
+
+  static south(): PositionVector {
+    return new PositionVector(1, 0);
+  }
+
+  static southWest(): PositionVector {
+    return new PositionVector(1, -1);
+  }
+
+  static west(): PositionVector {
+    return new PositionVector(0, -1);
+  }
+
+  static northWest(): PositionVector {
+    return new PositionVector(-1, -1);
+  }
+
+  static readonly allDirections: readonly PositionVector[] = [
+    PositionVector.north(),
+    PositionVector.northEast(),
+    PositionVector.east(),
+    PositionVector.southEast(),
+    PositionVector.south(),
+    PositionVector.southWest(),
+    PositionVector.west(),
+    PositionVector.northWest(),
+  ];
+}
+
+export class Position {
+  constructor(readonly row: number, readonly column: number) {}
+
+  /**
+   * @param vector Translation vector.
+   * @returns Position resembling the addition of this position and the translation vector.
+   */
+  translate(vector: PositionVector): Position {
+    return new Position(this.row + vector.rowDelta, this.column + vector.columnDelta);
+  }
+
+  /**
+   * @returns A string representation of this position.
+   */
+  toString(): string {
+    return `(${this.row}, ${this.column})`;
+  }
+
+  /**
+   * Compares two positions.
+   *
+   * A position is considered smaller if it is higher up and/or further left as the other position.
+   * @param other Position to compare this to.
+   * @returns Negative if this is considered smaller, positive if it is considered greater and zero for equal position.
+   */
+  compare(other: Position): number {
+    if (this.column === other.column) {
+      return this.row - other.row;
+    }
+
+    return this.column - other.column;
+  }
+}
+
+export class Size {
+  constructor(readonly rowCount: number, readonly columnCount: number) {}
+}
+
+export class GameField {
+  private readonly tiles: Map<string, Tile>;
+  private readonly generationMethod: GenerationMethod;
+  private readonly size: Size;
+  readonly didChangeFromLast: boolean;
+
+  constructor(
+    tiles: readonly Tile[],
+    generationMethod: GenerationMethod,
+    didChangeFromLast: boolean = true
+  ) {
+    this.tiles = new Map();
+    this.generationMethod = generationMethod;
+    this.didChangeFromLast = didChangeFromLast;
+
+    let maxPosition: Position = new Position(-1, -1);
+
+    tiles.forEach((tile) => {
+      if (tile.position.compare(maxPosition) > 0) {
+        maxPosition = tile.position;
+      }
+      this.tiles.set(tile.position.toString(), tile);
+    });
+
+    this.size = new Size(maxPosition.row + 1, maxPosition.column + 1);
+  }
+
+  /**
+   * Generates the next GameField according to the puzzle rules (aka Game of Life rules).
+   * @returns New GameField.
+   */
+  getNextGameField(): GameField {
+    const newTiles: Tile[] = [];
+    let didChange: boolean = false;
+
+    for (const tile of this.tiles.values()) {
+      const relevantSeats: Tile[] = this.getRelevantSeats(tile);
+      const occupiedAdjacentCount: number = relevantSeats.reduce(
+        (count, tile) => (tile.type === TileType.OCCUPIED ? count + 1 : count),
+        0
+      );
+      const maxOccupiedCountBeforeLeaving = this.getMaxOccupiedCountBeforeLeaving();
+
+      if (tile.type === TileType.EMPTY && occupiedAdjacentCount === 0) {
+        newTiles.push(new Tile(TileType.OCCUPIED, tile.position));
+        didChange = true;
+      } else if (
+        tile.type === TileType.OCCUPIED &&
+        occupiedAdjacentCount >= maxOccupiedCountBeforeLeaving
+      ) {
+        newTiles.push(new Tile(TileType.EMPTY, tile.position));
+        didChange = true;
+      } else {
+        newTiles.push(tile);
+      }
+    }
+
+    return new GameField(newTiles, this.generationMethod, didChange);
+  }
+
+  /**
+   * @param position Position of the tile.
+   * @returns The tile at the position. If there is no tile `undefined` is returned.
+   */
+  getTileAt(position: Position): Tile | undefined {
+    return this.tiles.get(position.toString());
+  }
+
+  /**
+   * @returns The total count of seats occupied on this game field.
+   */
+  getOccupiedSeatCount(): number {
+    const tiles = [...this.tiles.values()];
+    return tiles.reduce((count, tile) => (tile.type === TileType.OCCUPIED ? count + 1 : count), 0);
+  }
+
+  /**
+   * @returns The maximum amount of occupied seats before the person leaves.
+   * @private
+   */
+  private getMaxOccupiedCountBeforeLeaving(): number {
+    switch (this.generationMethod) {
+      case GenerationMethod.GAME_OF_LIFE:
+        return 4;
+      case GenerationMethod.VISIBILITY:
+        return 5;
+      default:
+        throw new Error(`Generation method ${this.generationMethod} is not supported.`);
+    }
+  }
+
+  /**
+   * @returns True if the position is within the boundaries of this game field.
+   */
+  private isPositionInField(position: Position): boolean {
+    const { row, column } = position;
+    const { rowCount, columnCount } = this.size;
+
+    return row >= 0 && row < rowCount && column >= 0 && column < columnCount;
+  }
+
+  /**
+   * Searches and returns the relevant seats for the given tiles.
+   *
+   * The "relevant seat" definition is dependant on the generation mode.
+   *
+   * @param tile Tile to get relevant seats of.
+   * @returns All tiles with seats that given tile would take into consideration.
+   * @private
+   */
+  private getRelevantSeats(tile: Tile): Tile[] {
+    switch (this.generationMethod) {
+      case GenerationMethod.GAME_OF_LIFE:
+        return this.getAdjacentSeats(tile);
+      case GenerationMethod.VISIBILITY:
+        return this.getAllVisibleSeats(tile);
+      default:
+        throw new Error(`Generation method ${this.generationMethod} is not supported.`);
+    }
+  }
+
+  /**
+   * @param tile Tile to get the adjacent tiles of.
+   * @returns Adjacent tiles of the given tile.
+   * @private
+   */
+  private getAdjacentSeats(tile: Tile): Tile[] {
+    const { row, column } = tile.position;
+    const adjacent: Tile[] = [];
+
+    for (let rowDelta = -1; rowDelta <= 1; rowDelta++) {
+      for (let columnDelta = -1; columnDelta <= 1; columnDelta++) {
+        if (rowDelta != 0 || columnDelta != 0) {
+          const tile: Tile | undefined = this.getTileAt(
+            new Position(row + rowDelta, column + columnDelta)
+          );
+
+          if (tile) {
+            adjacent.push(tile);
+          }
+        }
+      }
+    }
+
+    return adjacent;
+  }
+
+  /**
+   * Searches and returns the first visible seat in each direction (if there is one).
+   *
+   * The resulting list will not contain any non-seats tiles (like floors);
+   *
+   * @param tile Tile to get visible seats of.
+   * @returns All visible seats of the given tile.
+   * @private
+   */
+  private getAllVisibleSeats(tile: Tile): Tile[] {
+    const relevantTiles: Tile[] = [];
+
+    for (const direction of PositionVector.allDirections) {
+      const firstSeat = this.getFirstVisibleSeatInDirection(tile.position, direction);
+      if (firstSeat) {
+        relevantTiles.push(firstSeat);
+      }
+    }
+
+    return relevantTiles;
+  }
+
+  /**
+   * @param start Starting position.
+   * @param direction Direction to look for tiles.
+   * @returns The first seat visible from the start position in the given direction.
+   * @private
+   */
+  private getFirstVisibleSeatInDirection(
+    start: Position,
+    direction: PositionVector
+  ): Tile | undefined {
+    let currentPosition = start.translate(direction);
+
+    while (this.isPositionInField(currentPosition)) {
+      const tile: Tile | undefined = this.getTileAt(currentPosition);
+
+      if (tile?.isSeat()) {
+        return tile;
+      }
+
+      currentPosition = currentPosition.translate(direction);
+    }
+    return undefined;
+  }
+}
