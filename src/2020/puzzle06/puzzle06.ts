@@ -1,4 +1,4 @@
-import { PuzzleSolver } from '../util/PuzzleSolver';
+import { PuzzleSolver } from '../../util/PuzzleSolver';
 
 class Group {
   private readonly questionedAnyoneYes: Set<string>;

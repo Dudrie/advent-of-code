@@ -1,4 +1,4 @@
-import { PuzzleInputReader } from '../util/PuzzleInputReader';
+import { PuzzleInputReader } from '../../util/PuzzleInputReader';
 
 interface PasswordPolicy {
   readonly symbol: string;

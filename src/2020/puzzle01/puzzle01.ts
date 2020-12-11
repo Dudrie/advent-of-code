@@ -1,4 +1,4 @@
-import { PuzzleInputReader } from '../util/PuzzleInputReader';
+import { PuzzleInputReader } from '../../util/PuzzleInputReader';
 
 const numbers: number[] = new PuzzleInputReader(1)
   .getPuzzleInputSplitByLines()

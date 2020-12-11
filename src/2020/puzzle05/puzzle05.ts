@@ -1,4 +1,4 @@
-import { PuzzleSolver } from '../util/PuzzleSolver';
+import { PuzzleSolver } from '../../util/PuzzleSolver';
 
 class PuzzleSolver05 extends PuzzleSolver {
   private readonly seatIDs: number[];

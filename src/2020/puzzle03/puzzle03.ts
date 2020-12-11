@@ -1,4 +1,4 @@
-import { PuzzleSolver } from '../util/PuzzleSolver';
+import { PuzzleSolver } from '../../util/PuzzleSolver';
 
 interface Size {
   readonly rows: number;
