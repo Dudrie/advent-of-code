@@ -109,7 +109,7 @@ export class GameField {
     const { x, y } = position;
     const { rowCount, columnCount } = this.size;
 
-    return x >= 0 && x < rowCount && y >= 0 && y < columnCount;
+    return x >= 0 && x < columnCount && y >= 0 && y < rowCount;
   }
 
   /**
@@ -171,9 +171,9 @@ export class GameField {
     const relevantTiles: Tile[] = [];
 
     for (const direction of Vector.allDirections) {
-      const firstSeat = this.getFirstVisibleSeatInDirection(tile.position, direction);
-      if (firstSeat) {
-        relevantTiles.push(firstSeat);
+      const firstVisibleSeat = this.getFirstVisibleSeatInDirection(tile.position, direction);
+      if (firstVisibleSeat) {
+        relevantTiles.push(firstVisibleSeat);
       }
     }
 
