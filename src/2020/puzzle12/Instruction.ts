@@ -62,26 +62,59 @@ class TurnInstruction extends Instruction {
   }
 
   run(object: MovableObject) {
-    // Important: The geometry classes assume a default screen coordinate system (ie y-axios DOWN). However, this exercise points the y-axis UP, so turning left and right are interchanged...
     if (this.shouldTurnLeft()) {
-      object.turnRight(this.value);
-    } else {
       object.turnLeft(this.value);
+    } else {
+      object.turnRight(this.value);
     }
   }
 
   /**
-   * @returns True if the ferry should be turned left.
+   * @returns True if the object should be turned left.
    * @private
    */
-  private shouldTurnLeft(): boolean {
+  protected shouldTurnLeft(): boolean {
     return this.action === 'L';
+  }
+}
+
+class TurnAttachedAroundInstruction extends TurnInstruction {
+  constructor(action: string, value: number) {
+    super(action, value);
+  }
+
+  run(object: MovableObject) {
+    if (this.shouldTurnLeft()) {
+      object.turnLeftAroundAttachedTo(this.value);
+    } else {
+      object.turnRightAroundAttachedTo(this.value);
+    }
+  }
+}
+
+class MoveTowardsAttachedInstruction extends Instruction {
+  constructor(action: string, value: number) {
+    super(action, value);
+  }
+
+  run(object: MovableObject): void {
+    const attachedTo = object.getAttachedTo();
+    if (!attachedTo) {
+      throw new Error(
+        'Can not move other object towards the object because it is not attached to another object.'
+      );
+    }
+
+    const movementVector = Vector.between(attachedTo.getPosition(), object.getPosition()).scale(
+      this.value
+    );
+    attachedTo.move(movementVector);
   }
 }
 
 export abstract class InstructionFactory {
   /**
-   * Generates an instruction from the given information.
+   * Generates an instruction from the given information using rules for part A.
    *
    * @param instructionLine Information about the instruction.
    * @throws `Error` - If no instruction could be generated from the information.
@@ -100,6 +133,34 @@ export abstract class InstructionFactory {
       case 'L':
       case 'R':
         return new TurnInstruction(action, value);
+
+      default:
+        throw new Error(`Action "${action}" is not supported.`);
+    }
+  }
+
+  /**
+   * Generates an instruction from the given information using rules for part B.
+   *
+   * @param instructionLine Information about the instruction.
+   * @throws `Error` - If no instruction could be generated from the information.
+   */
+  static generateInstructionPartB(instructionLine: string): Instruction {
+    const [action, value] = InstructionFactory.getActionAndValue(instructionLine);
+
+    switch (action) {
+      case 'N':
+      case 'S':
+      case 'E':
+      case 'W':
+        return new MovementInstruction(action, value);
+
+      case 'F':
+        return new MoveTowardsAttachedInstruction(action, value);
+
+      case 'L':
+      case 'R':
+        return new TurnAttachedAroundInstruction(action, value);
 
       default:
         throw new Error(`Action "${action}" is not supported.`);

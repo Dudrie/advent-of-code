@@ -1,28 +1,28 @@
 import { Vector } from './Vector';
 
 export class Position {
-  constructor(readonly row: number, readonly column: number) {}
+  constructor(readonly x: number, readonly y: number) {}
 
   /**
    * @param vector Translation vector.
-   * @returns Position resembling the addition of this position and the translation vector.
+   * @returns Position_OLD resembling the addition of this position and the translation vector.
    */
   translate(vector: Vector): Position {
-    return new Position(this.row + vector.rowDelta, this.column + vector.columnDelta);
+    return new Position(this.x + vector.xDelta, this.y + vector.yDelta);
   }
 
   /**
    * @returns A string representation of this position.
    */
   toString(): string {
-    return `(${this.row}, ${this.column})`;
+    return `(${this.x}, ${this.y})`;
   }
 
   /**
    * @returns The manhattan distance measured from the origin (0, 0).
    */
   getManhattanDistance(): number {
-    return Math.abs(this.row) + Math.abs(this.column);
+    return Math.abs(this.x) + Math.abs(this.y);
   }
 
   /**
@@ -33,11 +33,18 @@ export class Position {
    * @returns Negative if this is considered smaller, positive if it is considered greater and zero for equal position.
    */
   compare(other: Position): number {
-    if (this.column === other.column) {
-      return this.row - other.row;
+    if (this.x === other.x) {
+      return this.y - other.y;
     }
 
-    return this.column - other.column;
+    return this.x - other.x;
+  }
+
+  /**
+   * @returns Vector representation of this position.
+   */
+  toVector(): Vector {
+    return Vector.fromPosition(this);
   }
 
   /**

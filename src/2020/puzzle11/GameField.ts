@@ -1,6 +1,6 @@
 import { Tile, TileType } from './Tile';
-import { Position } from '../../util/geometrie/Position';
 import { Vector } from '../../util/geometrie/Vector';
+import { Position } from '../../util/geometrie/Position';
 
 export enum GenerationMethod {
   GAME_OF_LIFE,
@@ -8,7 +8,7 @@ export enum GenerationMethod {
 }
 
 export class Size {
-  constructor(readonly rowCount: number, readonly columnCount: number) {}
+  constructor(readonly columnCount: number, readonly rowCount: number) {}
 }
 
 export class GameField {
@@ -35,7 +35,7 @@ export class GameField {
       this.tiles.set(tile.position.toString(), tile);
     });
 
-    this.size = new Size(maxPosition.row + 1, maxPosition.column + 1);
+    this.size = new Size(maxPosition.x + 1, maxPosition.y + 1);
   }
 
   /**
@@ -106,10 +106,10 @@ export class GameField {
    * @returns True if the position is within the boundaries of this game field.
    */
   private isPositionInField(position: Position): boolean {
-    const { row, column } = position;
+    const { x, y } = position;
     const { rowCount, columnCount } = this.size;
 
-    return row >= 0 && row < rowCount && column >= 0 && column < columnCount;
+    return x >= 0 && x < rowCount && y >= 0 && y < columnCount;
   }
 
   /**
@@ -138,14 +138,14 @@ export class GameField {
    * @private
    */
   private getAdjacentSeats(tile: Tile): Tile[] {
-    const { row, column } = tile.position;
+    const { x, y } = tile.position;
     const adjacent: Tile[] = [];
 
     for (let rowDelta = -1; rowDelta <= 1; rowDelta++) {
       for (let columnDelta = -1; columnDelta <= 1; columnDelta++) {
         if (rowDelta != 0 || columnDelta != 0) {
           const tile: Tile | undefined = this.getTileAt(
-            new Position(row + rowDelta, column + columnDelta)
+            new Position(x + rowDelta, y + columnDelta)
           );
 
           if (tile) {

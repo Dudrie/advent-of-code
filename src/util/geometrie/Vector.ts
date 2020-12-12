@@ -1,8 +1,9 @@
 import { Direction } from './Direction';
 import { Position } from './Position';
+import { GeometryMode, GeometrySettings } from './GeometrySettings';
 
 export class Vector {
-  constructor(readonly rowDelta: number, readonly columnDelta: number) {}
+  constructor(readonly xDelta: number, readonly yDelta: number) {}
 
   /**
    * Add the this vector and the given one using vector addition.
@@ -10,7 +11,7 @@ export class Vector {
    * @returns Sum of the two vectors.
    */
   add(vector: Vector): Vector {
-    return new Vector(this.rowDelta + vector.rowDelta, this.columnDelta + vector.columnDelta);
+    return new Vector(this.xDelta + vector.xDelta, this.yDelta + vector.yDelta);
   }
 
   /**
@@ -18,7 +19,7 @@ export class Vector {
    * @returns New vector which is the result of the scalar multiplication of the given scalar and this vector.
    */
   scale(scalar: number): Vector {
-    return new Vector(this.rowDelta * scalar, this.columnDelta * scalar);
+    return new Vector(this.xDelta * scalar, this.yDelta * scalar);
   }
 
   /**
@@ -35,13 +36,12 @@ export class Vector {
    * @returns New vector turned by the given amount of degrees (counter clockwise).
    */
   turn(degrees: number): Vector {
-    const radian: number = this.convertDegreeToRadian(degrees);
-    const newColumnDelta: number =
-      this.columnDelta * Math.cos(radian) - this.rowDelta * Math.sin(radian);
-    const newRowDelta: number =
-      this.columnDelta * Math.sin(radian) + this.rowDelta * Math.cos(radian);
+    const signum = GeometrySettings.getMode() === GeometryMode.MATHEMATICS ? 1 : -1;
+    const radian: number = signum * this.convertDegreeToRadian(degrees);
+    const newXDelta: number = this.xDelta * Math.cos(radian) - this.yDelta * Math.sin(radian);
+    const newYDelta: number = this.xDelta * Math.sin(radian) + this.yDelta * Math.cos(radian);
 
-    return new Vector(Math.round(newRowDelta), Math.round(newColumnDelta));
+    return new Vector(Math.round(newXDelta), Math.round(newYDelta));
   }
 
   /**
@@ -62,7 +62,7 @@ export class Vector {
    * @returns The point reached from the origin by this vector.
    */
   toPosition(): Position {
-    return new Position(this.rowDelta, this.columnDelta);
+    return new Position(this.xDelta, this.yDelta);
   }
 
   /**
@@ -79,7 +79,16 @@ export class Vector {
    * @returns Vector from the origin to the given position.
    */
   static fromPosition(position: Position): Vector {
-    return new Vector(position.row, position.column);
+    return new Vector(position.x, position.y);
+  }
+
+  /**
+   * @param from Starting point.
+   * @param to End point.
+   * @returns Vector from the start to the end point.
+   */
+  static between(from: Position, to: Position): Vector {
+    return new Vector(to.x - from.x, to.y - from.y);
   }
 
   /**
@@ -93,19 +102,19 @@ export class Vector {
   static getDirectionVector(direction: Direction): Vector {
     switch (direction) {
       case Direction.NORTH:
-        return new Vector(-1, 0);
+        return new Vector(0, -1);
       case Direction.NORTH_EAST:
-        return new Vector(-1, 1);
+        return new Vector(1, -1);
       case Direction.EAST:
-        return new Vector(0, 1);
+        return new Vector(1, 0);
       case Direction.SOUTH_EAST:
         return new Vector(1, 1);
       case Direction.SOUTH:
-        return new Vector(1, 0);
+        return new Vector(0, 1);
       case Direction.SOUTH_WEST:
-        return new Vector(1, -1);
+        return new Vector(-1, 1);
       case Direction.WEST:
-        return new Vector(0, -1);
+        return new Vector(-1, 0);
       case Direction.NORTH_WEST:
         return new Vector(-1, -1);
       default:

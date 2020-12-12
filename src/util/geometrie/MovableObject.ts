@@ -1,10 +1,11 @@
 import { Vector } from './Vector';
-import { Position } from './Position';
 import { Direction } from './Direction';
+import { Position } from './Position';
 
 export class MovableObject {
   private directionVector: Vector;
   private position: Position;
+  private attachedTo: MovableObject | undefined;
   private attachedObject: MovableObject | undefined;
 
   constructor(
@@ -14,6 +15,7 @@ export class MovableObject {
     this.position = startingPosition;
     this.directionVector = Vector.getDirectionVector(startingDirection);
     this.attachedObject = undefined;
+    this.attachedTo = undefined;
   }
 
   /**
@@ -24,6 +26,26 @@ export class MovableObject {
    */
   attachObject(attachedObject: MovableObject): void {
     this.attachedObject = attachedObject;
+    attachedObject.setAttachedTo(this);
+  }
+
+  /**
+   * @returns Object attached to this one or undefined if there is no object attached.
+   */
+  getAttachedObject(): MovableObject | undefined {
+    return this.attachedObject;
+  }
+
+  /**
+   * @param attachedTo Object this object is attached to.
+   * @private
+   */
+  private setAttachedTo(attachedTo: MovableObject): void {
+    this.attachedTo = attachedTo;
+  }
+
+  getAttachedTo(): MovableObject | undefined {
+    return this.attachedTo;
   }
 
   /**
@@ -62,11 +84,43 @@ export class MovableObject {
   }
 
   /**
+   * Turns this object counter clockwise around the point where the attached object is.
+   *
+   * @param degrees Degrees to turn the object (counter clockwise).
+   * @throw `Error` - This object is not attached to another object.
+   */
+  turnLeftAroundAttachedTo(degrees: number): void {
+    if (!this.attachedTo) {
+      throw new Error(
+        'Can not turn this object around the object it is attached to because it is not attached to another object.'
+      );
+    }
+
+    const prevPosition: Vector = this.position.toVector();
+    const newPosition: Vector = prevPosition.turnAroundPosition(
+      degrees,
+      this.attachedTo.getPosition()
+    );
+
+    this.position = newPosition.toPosition();
+  }
+
+  /**
    * Turns the object by the given degrees to the right.
    *
    * @param degrees Degrees to turn.
    */
   turnRight(degrees: number): void {
     this.directionVector = this.directionVector.turn(360 - degrees);
+  }
+
+  /**
+   * Turns this object clockwise around the point where the attached object is.
+   *
+   * @param degrees Degrees to turn the object (clockwise).
+   * @throw `Error` - This object is not attached to another object.
+   */
+  turnRightAroundAttachedTo(degrees: number): void {
+    this.turnLeftAroundAttachedTo(360 - degrees);
   }
 }

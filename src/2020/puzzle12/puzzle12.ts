@@ -1,6 +1,8 @@
 import { PuzzleSolver } from '../../util/PuzzleSolver';
 import { InstructionFactory } from './Instruction';
 import { MovableObject } from '../../util/geometrie/MovableObject';
+import { GeometryMode, GeometrySettings } from '../../util/geometrie/GeometrySettings';
+import { Position } from '../../util/geometrie/Position';
 
 class PuzzleSolver12 extends PuzzleSolver {
   constructor() {
@@ -8,7 +10,9 @@ class PuzzleSolver12 extends PuzzleSolver {
   }
 
   solve(): void {
+    GeometrySettings.setMode(GeometryMode.SCREEN);
     this.solveA();
+    this.solveB();
   }
 
   private solveA() {
@@ -20,6 +24,20 @@ class PuzzleSolver12 extends PuzzleSolver {
     }
 
     this.printSolution(ferry.getPosition().getManhattanDistance(), 'A');
+  }
+
+  private solveB() {
+    const input = this.inputReader.getPuzzleInputSplitByLines();
+    const instructions = input.map((i) => InstructionFactory.generateInstructionPartB(i));
+    const ferry: MovableObject = new MovableObject();
+    const waypoint: MovableObject = new MovableObject(new Position(10, -1));
+    ferry.attachObject(waypoint);
+
+    for (const instruction of instructions) {
+      instruction.run(waypoint);
+    }
+
+    this.printSolution(ferry.getPosition().getManhattanDistance(), 'B');
   }
 }
 

@@ -102,7 +102,7 @@ export class Game {
       for (let column = 0; column < chars.length; column++) {
         const newTile: Tile = new Tile(
           Tile.getTypeFromCharacter(chars[column]),
-          new Position(row, column)
+          new Position(column, row)
         );
 
         tiles.push(newTile);
