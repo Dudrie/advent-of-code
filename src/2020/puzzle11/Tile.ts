@@ -1,4 +1,4 @@
-import { Position } from './GameField';
+import { Position } from '../../util/geometrie/Position';
 
 export enum TileType {
   FLOOR,

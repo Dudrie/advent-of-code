@@ -1,89 +1,10 @@
 import { Tile, TileType } from './Tile';
+import { Position } from '../../util/geometrie/Position';
+import { Vector } from '../../util/geometrie/Vector';
 
 export enum GenerationMethod {
   GAME_OF_LIFE,
   VISIBILITY,
-}
-
-class PositionVector {
-  constructor(readonly rowDelta: number, readonly columnDelta: number) {}
-
-  static north(): PositionVector {
-    return new PositionVector(-1, 0);
-  }
-
-  static northEast(): PositionVector {
-    return new PositionVector(-1, 1);
-  }
-
-  static east(): PositionVector {
-    return new PositionVector(0, 1);
-  }
-
-  static southEast(): PositionVector {
-    return new PositionVector(1, 1);
-  }
-
-  static south(): PositionVector {
-    return new PositionVector(1, 0);
-  }
-
-  static southWest(): PositionVector {
-    return new PositionVector(1, -1);
-  }
-
-  static west(): PositionVector {
-    return new PositionVector(0, -1);
-  }
-
-  static northWest(): PositionVector {
-    return new PositionVector(-1, -1);
-  }
-
-  static readonly allDirections: readonly PositionVector[] = [
-    PositionVector.north(),
-    PositionVector.northEast(),
-    PositionVector.east(),
-    PositionVector.southEast(),
-    PositionVector.south(),
-    PositionVector.southWest(),
-    PositionVector.west(),
-    PositionVector.northWest(),
-  ];
-}
-
-export class Position {
-  constructor(readonly row: number, readonly column: number) {}
-
-  /**
-   * @param vector Translation vector.
-   * @returns Position resembling the addition of this position and the translation vector.
-   */
-  translate(vector: PositionVector): Position {
-    return new Position(this.row + vector.rowDelta, this.column + vector.columnDelta);
-  }
-
-  /**
-   * @returns A string representation of this position.
-   */
-  toString(): string {
-    return `(${this.row}, ${this.column})`;
-  }
-
-  /**
-   * Compares two positions.
-   *
-   * A position is considered smaller if it is higher up and/or further left as the other position.
-   * @param other Position to compare this to.
-   * @returns Negative if this is considered smaller, positive if it is considered greater and zero for equal position.
-   */
-  compare(other: Position): number {
-    if (this.column === other.column) {
-      return this.row - other.row;
-    }
-
-    return this.column - other.column;
-  }
 }
 
 export class Size {
@@ -249,7 +170,7 @@ export class GameField {
   private getAllVisibleSeats(tile: Tile): Tile[] {
     const relevantTiles: Tile[] = [];
 
-    for (const direction of PositionVector.allDirections) {
+    for (const direction of Vector.allDirections) {
       const firstSeat = this.getFirstVisibleSeatInDirection(tile.position, direction);
       if (firstSeat) {
         relevantTiles.push(firstSeat);
@@ -265,10 +186,7 @@ export class GameField {
    * @returns The first seat visible from the start position in the given direction.
    * @private
    */
-  private getFirstVisibleSeatInDirection(
-    start: Position,
-    direction: PositionVector
-  ): Tile | undefined {
+  private getFirstVisibleSeatInDirection(start: Position, direction: Vector): Tile | undefined {
     let currentPosition = start.translate(direction);
 
     while (this.isPositionInField(currentPosition)) {

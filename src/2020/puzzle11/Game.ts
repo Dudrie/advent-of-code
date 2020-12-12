@@ -1,7 +1,8 @@
 import { Tile } from './Tile';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Timer } from './Timer';
-import { GameField, GenerationMethod, Position } from './GameField';
+import { GameField, GenerationMethod } from './GameField';
+import { Position } from '../../util/geometrie/Position';
 
 export enum GameProgressState {
   /** Game has not started yet.  */

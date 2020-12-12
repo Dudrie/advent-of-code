@@ -25,9 +25,7 @@ rules:
   '@typescript-eslint/no-use-before-define':
     - 'error'
     - { functions: false, classes: true, variables: true, typedefs: true }
-  '@typescript-eslint/no-parameter-properties':
-    - 'error'
-    - { allows: ['private readonly', 'readonly', 'public'] }
+  '@typescript-eslint/no-parameter-properties': 'off'
   'constructor-super': 'error'
   'no-fallthrough': 'error'
   'prettier/prettier': 'warn'
