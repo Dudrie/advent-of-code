@@ -1,19 +1,19 @@
-import { Vector } from './Vector';
+import { Vector2D } from './Vector2D';
 import { Direction } from './Direction';
-import { Position } from './Position';
+import { Position2D } from './Position2D';
 
 export class MovableObject {
-  private directionVector: Vector;
-  private position: Position;
+  private directionVector: Vector2D;
+  private position: Position2D;
   private attachedTo: MovableObject | undefined;
   private attachedObject: MovableObject | undefined;
 
   constructor(
-    startingPosition: Position = Position.ORIGIN,
+    startingPosition: Position2D = Position2D.ORIGIN,
     startingDirection: Direction = Direction.EAST
   ) {
     this.position = startingPosition;
-    this.directionVector = Vector.getDirectionVector(startingDirection);
+    this.directionVector = Vector2D.getDirectionVector(startingDirection);
     this.attachedObject = undefined;
     this.attachedTo = undefined;
   }
@@ -51,14 +51,14 @@ export class MovableObject {
   /**
    * @returns The direction vector of this object.
    */
-  getDirectionVector(): Vector {
+  getDirectionVector(): Vector2D {
     return this.directionVector;
   }
 
   /**
    * @returns Current position of the object
    */
-  getPosition(): Position {
+  getPosition(): Position2D {
     return this.position;
   }
 
@@ -69,7 +69,7 @@ export class MovableObject {
    *
    * @param movementVector Direction to move the object in (see above).
    */
-  move(movementVector: Vector): void {
+  move(movementVector: Vector2D): void {
     this.position = this.position.translate(movementVector);
     this.attachedObject?.move(movementVector);
   }
@@ -96,8 +96,8 @@ export class MovableObject {
       );
     }
 
-    const prevPosition: Vector = this.position.toVector();
-    const newPosition: Vector = prevPosition.turnAroundPosition(
+    const prevPosition: Vector2D = this.position.toVector();
+    const newPosition: Vector2D = prevPosition.turnAroundPosition(
       degrees,
       this.attachedTo.getPosition()
     );

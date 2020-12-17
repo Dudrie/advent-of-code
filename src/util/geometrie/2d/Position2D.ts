@@ -1,21 +1,21 @@
-import { Vector } from './Vector';
+import { Vector2D } from './Vector2D';
+import { Position } from '../Position';
 
-export class Position {
-  constructor(readonly x: number, readonly y: number) {}
+export class Position2D extends Position {
+  get x(): number {
+    return this.getCoordinate(0);
+  }
+
+  get y(): number {
+    return this.getCoordinate(1);
+  }
 
   /**
    * @param vector Translation vector.
    * @returns Position_OLD resembling the addition of this position and the translation vector.
    */
-  translate(vector: Vector): Position {
-    return new Position(this.x + vector.xDelta, this.y + vector.yDelta);
-  }
-
-  /**
-   * @returns A string representation of this position.
-   */
-  toString(): string {
-    return `(${this.x}, ${this.y})`;
+  translate(vector: Vector2D): Position2D {
+    return new Position2D(this.x + vector.xDelta, this.y + vector.yDelta);
   }
 
   /**
@@ -32,7 +32,7 @@ export class Position {
    * @param other Position to compare this to.
    * @returns Negative if this is considered smaller, positive if it is considered greater and zero for equal position.
    */
-  compare(other: Position): number {
+  compare(other: Position2D): number {
     if (this.x === other.x) {
       return this.y - other.y;
     }
@@ -41,14 +41,15 @@ export class Position {
   }
 
   /**
-   * @returns Vector representation of this position.
+   * @returns Vector2D representation of this position.
    */
-  toVector(): Vector {
-    return Vector.fromPosition(this);
+  toVector(): Vector2D {
+    const result = super.toVector();
+    return new Vector2D(result.getCoordinate(0), result.getCoordinate(1));
   }
 
   /**
    * Origin of the Cartesian coordinate system.
    */
-  static readonly ORIGIN = new Position(0, 0);
+  static readonly ORIGIN = new Position2D(0, 0);
 }

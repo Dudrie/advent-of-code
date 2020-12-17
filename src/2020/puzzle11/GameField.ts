@@ -1,6 +1,6 @@
 import { Tile, TileType } from './Tile';
-import { Vector } from '../../util/geometrie/2d/Vector';
-import { Position } from '../../util/geometrie/2d/Position';
+import { Vector2D } from '../../util/geometrie/2d/Vector2D';
+import { Position2D } from '../../util/geometrie/2d/Position2D';
 
 export enum GenerationMethod {
   GAME_OF_LIFE,
@@ -26,7 +26,7 @@ export class GameField {
     this.generationMethod = generationMethod;
     this.didChangeFromLast = didChangeFromLast;
 
-    let maxPosition: Position = new Position(-1, -1);
+    let maxPosition: Position2D = new Position2D(-1, -1);
 
     tiles.forEach((tile) => {
       if (tile.position.compare(maxPosition) > 0) {
@@ -75,7 +75,7 @@ export class GameField {
    * @param position Position of the tile.
    * @returns The tile at the position. If there is no tile `undefined` is returned.
    */
-  getTileAt(position: Position): Tile | undefined {
+  getTileAt(position: Position2D): Tile | undefined {
     return this.tiles.get(position.toString());
   }
 
@@ -105,7 +105,7 @@ export class GameField {
   /**
    * @returns True if the position is within the boundaries of this game field.
    */
-  private isPositionInField(position: Position): boolean {
+  private isPositionInField(position: Position2D): boolean {
     const { x, y } = position;
     const { rowCount, columnCount } = this.size;
 
@@ -145,7 +145,7 @@ export class GameField {
       for (let columnDelta = -1; columnDelta <= 1; columnDelta++) {
         if (rowDelta != 0 || columnDelta != 0) {
           const tile: Tile | undefined = this.getTileAt(
-            new Position(x + rowDelta, y + columnDelta)
+            new Position2D(x + rowDelta, y + columnDelta)
           );
 
           if (tile) {
@@ -170,7 +170,7 @@ export class GameField {
   private getAllVisibleSeats(tile: Tile): Tile[] {
     const relevantTiles: Tile[] = [];
 
-    for (const direction of Vector.allDirections) {
+    for (const direction of Vector2D.allDirections) {
       const firstVisibleSeat = this.getFirstVisibleSeatInDirection(tile.position, direction);
       if (firstVisibleSeat) {
         relevantTiles.push(firstVisibleSeat);
@@ -186,7 +186,7 @@ export class GameField {
    * @returns The first seat visible from the start position in the given direction.
    * @private
    */
-  private getFirstVisibleSeatInDirection(start: Position, direction: Vector): Tile | undefined {
+  private getFirstVisibleSeatInDirection(start: Position2D, direction: Vector2D): Tile | undefined {
     let currentPosition = start.translate(direction);
 
     while (this.isPositionInField(currentPosition)) {

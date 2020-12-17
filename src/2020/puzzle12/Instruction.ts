@@ -1,6 +1,6 @@
 import { MovableObject } from '../../util/geometrie/2d/MovableObject';
 import { Direction } from '../../util/geometrie/2d/Direction';
-import { Vector } from '../../util/geometrie/2d/Vector';
+import { Vector2D } from '../../util/geometrie/2d/Vector2D';
 
 export abstract class Instruction {
   protected constructor(protected readonly action: string, protected readonly value: number) {}
@@ -19,10 +19,10 @@ class MovementInstruction extends Instruction {
 
   run(object: MovableObject) {
     const direction = this.getDirectionFromAction();
-    let movementVector: Vector;
+    let movementVector: Vector2D;
 
     if (direction !== undefined) {
-      movementVector = Vector.getDirectionVector(direction).scale(this.value);
+      movementVector = Vector2D.getDirectionVector(direction).scale(this.value);
     } else {
       movementVector = object.getDirectionVector().scale(this.value);
     }
@@ -105,7 +105,7 @@ class MoveTowardsAttachedInstruction extends Instruction {
       );
     }
 
-    const movementVector = Vector.between(attachedTo.getPosition(), object.getPosition()).scale(
+    const movementVector = Vector2D.between(attachedTo.getPosition(), object.getPosition()).scale(
       this.value
     );
     attachedTo.move(movementVector);

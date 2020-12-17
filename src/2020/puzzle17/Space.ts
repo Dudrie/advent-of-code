@@ -1,4 +1,5 @@
-import { Position3D, Position3DHull } from '../../util/geometrie/3d/Position3D';
+import { Position } from '../../util/geometrie/Position';
+import { PositionHull } from '../../util/geometrie/PositionHull';
 
 enum CubeState {
   ACTIVE = 'ACTIVE',
@@ -6,7 +7,7 @@ enum CubeState {
 }
 
 class Cube {
-  constructor(readonly state: CubeState, readonly position: Position3D) {}
+  constructor(readonly state: CubeState, readonly position: Position) {}
 
   /**
    * @param newState State of the copy of this cube.
@@ -45,7 +46,7 @@ class CubeWorld {
    * @param cube Cube to set at that position.
    * @private
    */
-  setCube(position: Position3D, cube: Cube): void {
+  setCube(position: Position, cube: Cube): void {
     if (!cube.position.equals(position)) {
       throw new Error(
         `The given position ${position.toString()} is not the position of the given cube ${cube.position.toString()}`
@@ -68,7 +69,7 @@ class CubeWorld {
    * @returns Cube at that position.
    * @private
    */
-  getCube(position: Position3D): Cube {
+  getCube(position: Position): Cube {
     const cube: Cube | undefined = this.cubes.get(this.convertPositionToMapKey(position));
 
     return cube ?? new Cube(CubeState.INACTIVE, position);
@@ -86,28 +87,35 @@ class CubeWorld {
    * @returns Key for the cube map of the given position.
    * @private
    */
-  private convertPositionToMapKey(position: Position3D): string {
+  private convertPositionToMapKey(position: Position): string {
     return position.toString();
   }
 
   /**
    * Generates a cube world with cubes in the z=0 plane from the given input.
    * @param input Input to use for the generation.
+   * @param dimension Dimension of the cube world.
    * @returns Generated cube world.
    * @private
    */
-  static fromInput(input: string[]): CubeWorld {
+  static fromInput(input: string[], dimension: number): CubeWorld {
     const cubes: Cube[] = [];
+
     for (let y = 0; y < input.length; y++) {
       const line: string = input[y];
       for (let x = 0; x < line.length; x++) {
         const charAtPos: string = line.charAt(x);
         const state: CubeState = charAtPos === '#' ? CubeState.ACTIVE : CubeState.INACTIVE;
-        const position: Position3D = new Position3D(x, y, 0);
+        const positionCoordinates: number[] = [x, y];
 
-        cubes.push(new Cube(state, position));
+        for (let idx = positionCoordinates.length; idx < dimension; idx++) {
+          positionCoordinates.push(0);
+        }
+
+        cubes.push(new Cube(state, new Position(...positionCoordinates)));
       }
     }
+
     return new CubeWorld(cubes);
   }
 
@@ -125,8 +133,8 @@ class CubeWorld {
 export class Space {
   private cubeWorld: CubeWorld;
 
-  constructor(input: string[]) {
-    this.cubeWorld = CubeWorld.fromInput(input);
+  constructor(input: string[], dimension: number) {
+    this.cubeWorld = CubeWorld.fromInput(input, dimension);
   }
 
   /**
@@ -176,7 +184,7 @@ export class Space {
    * @private
    */
   private getRelevantCubesForTick(): Cube[] {
-    const hull: Position3DHull = new Position3DHull(
+    const hull: PositionHull = new PositionHull(
       this.cubeWorld.getAllCubes().map((c) => c.position)
     );
     hull.expandHull(1);

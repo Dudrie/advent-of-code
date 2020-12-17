@@ -2,7 +2,7 @@ import { Tile } from './Tile';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Timer } from './Timer';
 import { GameField, GenerationMethod } from './GameField';
-import { Position } from '../../util/geometrie/2d/Position';
+import { Position2D } from '../../util/geometrie/2d/Position2D';
 
 export enum GameProgressState {
   /** Game has not started yet.  */
@@ -102,7 +102,7 @@ export class Game {
       for (let column = 0; column < chars.length; column++) {
         const newTile: Tile = new Tile(
           Tile.getTypeFromCharacter(chars[column]),
-          new Position(column, row)
+          new Position2D(column, row)
         );
 
         tiles.push(newTile);

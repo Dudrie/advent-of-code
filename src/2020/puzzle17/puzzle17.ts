@@ -7,14 +7,33 @@ class PuzzleSolver17 extends PuzzleSolver {
   }
 
   solve(): void {
-    const space: Space = new Space(this.inputReader.getPuzzleInputSplitByLines());
+    this.solveA();
+    this.solveB();
+  }
 
+  private solveA(): void {
+    const space: Space = new Space(this.inputReader.getPuzzleInputSplitByLines(), 3);
+
+    console.log('Running cycle for part A');
+    this.runCycleForSpace(space);
+
+    this.printSolution(space.getActiveCubeCount(), 'A');
+  }
+
+  private solveB(): void {
+    const space: Space = new Space(this.inputReader.getPuzzleInputSplitByLines(), 4);
+
+    console.log('Running cycle for part B');
+    this.runCycleForSpace(space);
+
+    this.printSolution(space.getActiveCubeCount(), 'B');
+  }
+
+  private runCycleForSpace(space: Space): void {
     for (let i = 0; i < 6; i++) {
       space.runTick();
       console.log(`Active cubes after cycle ${i + 1}: ${space.getActiveCubeCount()}`);
     }
-
-    this.printSolution(space.getActiveCubeCount(), 'A');
   }
 }
 

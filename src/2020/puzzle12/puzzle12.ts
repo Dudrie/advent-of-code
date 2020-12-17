@@ -2,7 +2,7 @@ import { PuzzleSolver } from '../../util/PuzzleSolver';
 import { InstructionFactory } from './Instruction';
 import { MovableObject } from '../../util/geometrie/2d/MovableObject';
 import { GeometryMode, GeometrySettings } from '../../util/geometrie/2d/GeometrySettings';
-import { Position } from '../../util/geometrie/2d/Position';
+import { Position2D } from '../../util/geometrie/2d/Position2D';
 
 class PuzzleSolver12 extends PuzzleSolver {
   constructor() {
@@ -30,7 +30,7 @@ class PuzzleSolver12 extends PuzzleSolver {
     const input = this.inputReader.getPuzzleInputSplitByLines();
     const instructions = input.map((i) => InstructionFactory.generateInstructionPartB(i));
     const ferry: MovableObject = new MovableObject();
-    const waypoint: MovableObject = new MovableObject(new Position(10, -1));
+    const waypoint: MovableObject = new MovableObject(new Position2D(10, -1));
     ferry.attachObject(waypoint);
 
     for (const instruction of instructions) {

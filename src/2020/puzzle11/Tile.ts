@@ -1,4 +1,4 @@
-import { Position } from '../../util/geometrie/2d/Position';
+import { Position2D } from '../../util/geometrie/2d/Position2D';
 
 export enum TileType {
   FLOOR,
@@ -7,7 +7,7 @@ export enum TileType {
 }
 
 export class Tile {
-  constructor(readonly type: TileType, readonly position: Position) {}
+  constructor(readonly type: TileType, readonly position: Position2D) {}
 
   /**
    * @returns True if this tile is considered to be a seat.
