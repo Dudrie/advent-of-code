@@ -1,6 +1,6 @@
-import { MovableObject } from '../../util/geometrie/MovableObject';
-import { Direction } from '../../util/geometrie/Direction';
-import { Vector } from '../../util/geometrie/Vector';
+import { MovableObject } from '../../util/geometrie/2d/MovableObject';
+import { Direction } from '../../util/geometrie/2d/Direction';
+import { Vector } from '../../util/geometrie/2d/Vector';
 
 export abstract class Instruction {
   protected constructor(protected readonly action: string, protected readonly value: number) {}

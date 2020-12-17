@@ -1,6 +1,6 @@
 import { Tile, TileType } from './Tile';
-import { Vector } from '../../util/geometrie/Vector';
-import { Position } from '../../util/geometrie/Position';
+import { Vector } from '../../util/geometrie/2d/Vector';
+import { Position } from '../../util/geometrie/2d/Position';
 
 export enum GenerationMethod {
   GAME_OF_LIFE,

@@ -1,8 +1,8 @@
 import { PuzzleSolver } from '../../util/PuzzleSolver';
 import { InstructionFactory } from './Instruction';
-import { MovableObject } from '../../util/geometrie/MovableObject';
-import { GeometryMode, GeometrySettings } from '../../util/geometrie/GeometrySettings';
-import { Position } from '../../util/geometrie/Position';
+import { MovableObject } from '../../util/geometrie/2d/MovableObject';
+import { GeometryMode, GeometrySettings } from '../../util/geometrie/2d/GeometrySettings';
+import { Position } from '../../util/geometrie/2d/Position';
 
 class PuzzleSolver12 extends PuzzleSolver {
   constructor() {

@@ -1,4 +1,4 @@
-import { Position } from '../../util/geometrie/Position';
+import { Position } from '../../util/geometrie/2d/Position';
 
 export enum TileType {
   FLOOR,
