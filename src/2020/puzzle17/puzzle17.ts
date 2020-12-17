@@ -4,7 +4,6 @@ import { Space } from './Space';
 class PuzzleSolver17 extends PuzzleSolver {
   constructor() {
     super(17);
-    this.loadPuzzleTestData(1);
   }
 
   solve(): void {

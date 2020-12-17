@@ -24,96 +24,20 @@ class Cube {
   }
 }
 
-export class Space {
+class CubeWorld {
   private readonly cubes: Map<string, Cube>;
 
-  constructor(input: string[]) {
+  constructor(cubes: Cube[]) {
     this.cubes = new Map();
-    this.generateInitialCubes(input);
+
+    cubes.forEach((cube) => this.setCube(cube.position, cube));
   }
 
   /**
-   * Runs one tick of the game.
-   */
-  runTick(): void {
-    const cubes: Cube[] = this.getRelevantCubesForTick();
-
-    for (const cube of cubes) {
-      const neighbors: Cube[] = this.getCubesAroundCube(cube);
-      const activeNeighbors: number = neighbors.filter((c) => c.isActive()).length;
-
-      if (this.shouldCubeBeActive(cube, activeNeighbors)) {
-        this.setCube(cube.position, cube.setState(CubeState.ACTIVE));
-      } else {
-        this.setCube(cube.position, cube.setState(CubeState.INACTIVE));
-      }
-    }
-  }
-
-  /**
-   * @returns Number of cubes currently active in the space.
+   * @returns Number of cubes currently active in the cube world.
    */
   getActiveCubeCount(): number {
-    return [...this.cubes.values()].filter((c) => c.isActive()).length;
-  }
-
-  /**
-   * @param cube Cube to check.
-   * @param activeNeighbors Active neighbors of the given cube.
-   * @returns True if the cube should be active with the given amount of active neighbors.
-   * @private
-   */
-  private shouldCubeBeActive(cube: Cube, activeNeighbors: number): boolean {
-    if (cube.isActive()) {
-      return activeNeighbors === 2 || activeNeighbors === 3;
-    } else {
-      return activeNeighbors === 3;
-    }
-  }
-
-  /**
-   * @returns All relevant cubes for the next tick.
-   * @private
-   */
-  private getRelevantCubesForTick(): Cube[] {
-    const hull: Position3DHull = new Position3DHull(this.getCubes().map((c) => c.position));
-    hull.expandHull(1);
-    return hull.getPositionsInsideHull().map((p) => this.getCube(p));
-  }
-
-  /**
-   * @returns All cubes in this space.
-   * @private
-   */
-  private getCubes(): Cube[] {
-    return [...this.cubes.values()];
-  }
-
-  /**
-   * @param cube Cube to get neighbors.
-   * @returns All neighbors of the given cube.
-   * @private
-   */
-  private getCubesAroundCube(cube: Cube): Cube[] {
-    return cube.position.getCubeAround().map((p) => this.getCube(p));
-  }
-
-  /**
-   * Generates the initial cubes in the z=0 plane from the given input.
-   * @param input Input to use for the generation.
-   * @private
-   */
-  private generateInitialCubes(input: string[]): void {
-    for (let y = 0; y < input.length; y++) {
-      const line: string = input[y];
-      for (let x = 0; x < line.length; x++) {
-        const charAtPos: string = line.charAt(x);
-        const state: CubeState = charAtPos === '#' ? CubeState.ACTIVE : CubeState.INACTIVE;
-        const position: Position3D = new Position3D(x, y, 0);
-
-        this.setCube(position, new Cube(state, position));
-      }
-    }
+    return this.getAllCubes().filter((c) => c.isActive()).length;
   }
 
   /**
@@ -121,7 +45,7 @@ export class Space {
    * @param cube Cube to set at that position.
    * @private
    */
-  private setCube(position: Position3D, cube: Cube): void {
+  setCube(position: Position3D, cube: Cube): void {
     if (!cube.position.equals(position)) {
       throw new Error(
         `The given position ${position.toString()} is not the position of the given cube ${cube.position.toString()}`
@@ -144,10 +68,17 @@ export class Space {
    * @returns Cube at that position.
    * @private
    */
-  private getCube(position: Position3D): Cube {
+  getCube(position: Position3D): Cube {
     const cube: Cube | undefined = this.cubes.get(this.convertPositionToMapKey(position));
 
     return cube ?? new Cube(CubeState.INACTIVE, position);
+  }
+
+  /**
+   * @returns All cubes in this cube world.
+   */
+  getAllCubes(): Cube[] {
+    return [...this.cubes.values()];
   }
 
   /**
@@ -157,5 +88,107 @@ export class Space {
    */
   private convertPositionToMapKey(position: Position3D): string {
     return position.toString();
+  }
+
+  /**
+   * Generates a cube world with cubes in the z=0 plane from the given input.
+   * @param input Input to use for the generation.
+   * @returns Generated cube world.
+   * @private
+   */
+  static fromInput(input: string[]): CubeWorld {
+    const cubes: Cube[] = [];
+    for (let y = 0; y < input.length; y++) {
+      const line: string = input[y];
+      for (let x = 0; x < line.length; x++) {
+        const charAtPos: string = line.charAt(x);
+        const state: CubeState = charAtPos === '#' ? CubeState.ACTIVE : CubeState.INACTIVE;
+        const position: Position3D = new Position3D(x, y, 0);
+
+        cubes.push(new Cube(state, position));
+      }
+    }
+    return new CubeWorld(cubes);
+  }
+
+  /**
+   * Generates a copy of the given cube world.
+   *
+   * @param cubeWorld Cube world to copy.
+   * @returns The copied cube world.
+   */
+  static fromCubeWorld(cubeWorld: CubeWorld): CubeWorld {
+    return new CubeWorld(cubeWorld.getAllCubes());
+  }
+}
+
+export class Space {
+  private cubeWorld: CubeWorld;
+
+  constructor(input: string[]) {
+    this.cubeWorld = CubeWorld.fromInput(input);
+  }
+
+  /**
+   * Runs one tick of the game.
+   */
+  runTick(): void {
+    const newCubeWorld: CubeWorld = CubeWorld.fromCubeWorld(this.cubeWorld);
+    const cubes: Cube[] = this.getRelevantCubesForTick();
+
+    for (const cube of cubes) {
+      const neighbors: Cube[] = this.getCubesAroundCube(cube);
+      const activeNeighbors: number = neighbors.filter((c) => c.isActive()).length;
+
+      if (this.shouldCubeBeActive(cube, activeNeighbors)) {
+        newCubeWorld.setCube(cube.position, cube.setState(CubeState.ACTIVE));
+      } else {
+        newCubeWorld.setCube(cube.position, cube.setState(CubeState.INACTIVE));
+      }
+    }
+
+    this.cubeWorld = newCubeWorld;
+  }
+
+  /**
+   * @returns Number of cubes currently active in this space.
+   */
+  getActiveCubeCount(): number {
+    return this.cubeWorld.getActiveCubeCount();
+  }
+
+  /**
+   * @param cube Cube to check.
+   * @param activeNeighbors Active neighbors of the given cube.
+   * @returns True if the cube should be active with the given amount of active neighbors.
+   * @private
+   */
+  private shouldCubeBeActive(cube: Cube, activeNeighbors: number): boolean {
+    if (cube.isActive()) {
+      return activeNeighbors === 2 || activeNeighbors === 3;
+    } else {
+      return activeNeighbors === 3;
+    }
+  }
+
+  /**
+   * @returns All relevant cubes for the next tick.
+   * @private
+   */
+  private getRelevantCubesForTick(): Cube[] {
+    const hull: Position3DHull = new Position3DHull(
+      this.cubeWorld.getAllCubes().map((c) => c.position)
+    );
+    hull.expandHull(1);
+    return hull.getPositionsInsideHull().map((p) => this.cubeWorld.getCube(p));
+  }
+
+  /**
+   * @param cube Cube to get neighbors.
+   * @returns All neighbors of the given cube.
+   * @private
+   */
+  private getCubesAroundCube(cube: Cube): Cube[] {
+    return cube.position.getCubeAround().map((p) => this.cubeWorld.getCube(p));
   }
 }
