@@ -7,20 +7,18 @@ class PuzzleSolver18 extends PuzzleSolver {
   }
 
   solve(): void {
-    this.solveA();
-    this.solveB();
+    this.solvePart(CalcTreeMode.NO_PRECEDENCE, 'A');
+    this.solvePart(CalcTreeMode.ADDITION_FIRST, 'B');
   }
 
-  private solveA(): void {
+  private solvePart(calcMode: CalcTreeMode, part: 'A' | 'B'): void {
     const allTrees: CalcTree[] = this.inputReader
       .getPuzzleInputSplitByLines()
-      .map((i) => new CalcTree(i, CalcTreeMode.NO_PRECEDENCE));
+      .map((i) => new CalcTree(i, calcMode));
     const sum: number = allTrees.reduce((sum, tree) => sum + tree.calcResult(), 0);
 
-    this.printSolution(sum, 'A');
+    this.printSolution(sum, part);
   }
-
-  private solveB(): void {}
 }
 
 const time = Date.now();
