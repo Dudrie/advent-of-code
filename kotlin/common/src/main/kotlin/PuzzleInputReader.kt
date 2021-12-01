@@ -1,7 +1,7 @@
 import java.io.FileNotFoundException
 import java.net.URL
 
-data class PuzzleInputReader(val puzzleNumber: Number, val testNo: Number? = null) {
+data class PuzzleInputReader(val puzzleNumber: Int, val testNo: Int? = null) {
 
     fun getPuzzleInput(): String = loadInput()
 
@@ -12,13 +12,13 @@ data class PuzzleInputReader(val puzzleNumber: Number, val testNo: Number? = nul
     private fun loadInput(): String {
         val numString = puzzleNumber.toTwoDigitString()
         val testPostfix = if (testNo != null) {
-            "_Test${testNo.toTwoDigitString()}"
+            "Test${testNo.toTwoDigitString()}"
         } else {
-            ""
+            "Input"
         }
-        val filePath = "puzzle$numString$testPostfix.txt"
+        val filePath = "Puzzle$numString/$testPostfix.txt"
 
-        return loadResource(filePath).readText(Charsets.UTF_8)
+        return loadResource(filePath).readText(Charsets.UTF_8).trim()
     }
 
     private fun loadResource(filePath: String): URL {
@@ -29,4 +29,4 @@ data class PuzzleInputReader(val puzzleNumber: Number, val testNo: Number? = nul
 
 }
 
-fun Number.toTwoDigitString(): String = this.toString().padStart(2, '0')
+fun Int.toTwoDigitString(): String = this.toString().padStart(2, '0')
