@@ -28,12 +28,12 @@ abstract class PuzzleSolver(private val puzzleNumber: Int) {
             val time = measureTimeMillis { solution = action() }
             printSolution(solution, part, time)
         } catch (e: NotImplementedError) {
-            println("Part B is not yet implemented")
+            println("[Not ready] Part $part is not yet implemented")
         }
     }
 
     private fun printSolution(solution: Number, part: PuzzlePart, time: Long) {
-        println("Part $part: $solution ($time ms)")
+        println("[Solution] Part $part: $solution ($time ms)")
     }
 }
 
