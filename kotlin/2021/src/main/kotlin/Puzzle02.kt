@@ -1,6 +1,6 @@
 class Puzzle02 : PuzzleSolver(2) {
     private lateinit var submarinePosition: SubmarinePosition
-    private val commands = getPuzzleLines()
+    private val commands by lazy { getPuzzleLines() }
 
     override fun solvePartA(): Number {
         submarinePosition = SubmarinePosition(0, 0, 0)

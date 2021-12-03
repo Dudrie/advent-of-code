@@ -52,6 +52,8 @@ fun createNewPuzzleCodeFile(puzzleNo: Int, codePath: String) {
         file.writer(Charsets.UTF_8).use {
             it.write(
                 "class Puzzle$puzzleNoTwoDigits : PuzzleSolver($puzzleNo) {\n" +
+                        "    private val data by lazy { getPuzzleLines() }\n" +
+                        "\n" +
                         "    override fun solvePartA(): Number {\n" +
                         "        TODO(\"Not yet implemented\")\n" +
                         "    }\n" +
