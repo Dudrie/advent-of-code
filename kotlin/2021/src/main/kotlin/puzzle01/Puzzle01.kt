@@ -1,3 +1,7 @@
+package puzzle01
+
+import common.PuzzleSolver
+
 class Puzzle01 : PuzzleSolver(1) {
 
     override fun solvePartA(): Number = getIncreasedCount(getPuzzleLinesToInt())

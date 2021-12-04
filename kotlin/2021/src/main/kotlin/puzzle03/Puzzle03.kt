@@ -1,3 +1,7 @@
+package puzzle03
+
+import common.PuzzleSolver
+
 class Puzzle03 : PuzzleSolver(3) {
 
     private val numbers by lazy { getPuzzleLines() }

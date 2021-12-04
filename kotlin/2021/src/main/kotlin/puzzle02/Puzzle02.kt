@@ -1,3 +1,7 @@
+package puzzle02
+
+import common.PuzzleSolver
+
 class Puzzle02 : PuzzleSolver(2) {
     private lateinit var submarinePosition: SubmarinePosition
     private val commands by lazy { getPuzzleLines() }

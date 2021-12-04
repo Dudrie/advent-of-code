@@ -24,34 +24,38 @@ task("createPuzzle") {
 
         createNewPuzzleCodeFile(puzzle.toInt(), codePath)
 
-        file(resourcePath).mkdirs()
         createNewFile("$resourcePath/Input.txt")
         createNewFile("$resourcePath/Test01.txt")
     }
 }
 
 fun createNewFile(filePath: String): File {
-    val createdFile = file(filePath)
+    val fileToCreate = file(filePath)
 
-    val isFileCreated = file(filePath).createNewFile()
+    fileToCreate.parentFile.mkdirs()
+    val isFileCreated = fileToCreate.createNewFile()
     if (isFileCreated) {
         println("[CREATED] $filePath")
     } else {
         println("[ALREADY EXISTS] $filePath")
     }
 
-    return createdFile
+    return fileToCreate
 }
 
 fun createNewPuzzleCodeFile(puzzleNo: Int, codePath: String) {
     val puzzleNoTwoDigits = puzzleNo.toString().padStart(2, '0')
-    val filePath = "$codePath/Puzzle$puzzleNoTwoDigits.kt"
+    val filePath = "$codePath/puzzle$puzzleNoTwoDigits/Puzzle$puzzleNoTwoDigits.kt"
     val file = createNewFile(filePath)
 
     if (file.length() == 0L) {
         file.writer(Charsets.UTF_8).use {
             it.write(
-                "class Puzzle$puzzleNoTwoDigits : PuzzleSolver($puzzleNo) {\n" +
+                "package puzzle$puzzleNoTwoDigits\n" +
+                        "\n" +
+                        "import common.PuzzleSolver\n" +
+                        "\n" +
+                        "class Puzzle$puzzleNoTwoDigits : PuzzleSolver($puzzleNo) {\n" +
                         "    private val data by lazy { getPuzzleLines() }\n" +
                         "\n" +
                         "    override fun solvePartA(): Number {\n" +
