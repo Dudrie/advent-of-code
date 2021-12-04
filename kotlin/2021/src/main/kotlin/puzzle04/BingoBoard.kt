@@ -2,10 +2,10 @@ package puzzle04
 
 import model.Coordinates
 
-class BingoBoard(inputLines: List<String>) {
+class BingoBoard(val no: Int, inputLines: List<String>) {
     private val numbers: List<BingoNumber>
     private var lastCheckedIdx: Int? = null
-    private var winningIndexes: List<Int> = mutableListOf()
+    private var hasAlreadyWon = false
 
     init {
         numbers = loadNumbersFromInput(inputLines)
@@ -21,12 +21,14 @@ class BingoBoard(inputLines: List<String>) {
     }
 
     fun hasWinningLine(): Boolean {
+        if (hasAlreadyWon) {
+            return true;
+        }
+
         val (column, row) = getCoordinatesOfIndex(lastCheckedIdx ?: return false)
 
-        checkRow(row)
-        checkColumn(column)
-
-        return winningIndexes.isNotEmpty()
+        hasAlreadyWon = checkRow(row) || checkColumn(column)
+        return hasAlreadyWon
     }
 
     fun getSumOfUnmarkedNumbers(): Int = numbers.sumOf {
@@ -39,27 +41,21 @@ class BingoBoard(inputLines: List<String>) {
         return getNumberAt(x, y).value
     }
 
-    private fun checkRow(row: Int) {
-        checkPart { Coordinates(it, row) }
-    }
+    private fun checkRow(row: Int) = checkPart { Coordinates(it, row) }
 
-    private fun checkColumn(column: Int) {
-        checkPart { Coordinates(column, it) }
-    }
+    private fun checkColumn(column: Int) = checkPart { Coordinates(column, it) }
 
-    private fun checkPart(getCoords: (idx: Int) -> Coordinates) {
+    private fun checkPart(getCoords: (idx: Int) -> Coordinates): Boolean {
         val winning = mutableListOf<Int>()
 
         for (i in 0 until 5) {
             val (x, y) = getCoords(i)
             if (!getNumberAt(x, y).checked) {
-                return
-            } else {
-                winning += getIndexOfCoordinates(x, y)
+                return false
             }
         }
 
-        winningIndexes = winning
+        return true
     }
 
     private fun getNumberAt(x: Int, y: Int): BingoNumber = numbers[getIndexOfCoordinates(x, y)]
