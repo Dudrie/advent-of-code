@@ -56,7 +56,9 @@ fun createNewPuzzleCodeFile(puzzleNo: Int, codePath: String) {
                         "import common.PuzzleSolver\n" +
                         "\n" +
                         "class Puzzle$puzzleNoTwoDigits : PuzzleSolver($puzzleNo) {\n" +
-                        "    private val data by lazy { getPuzzleLines() }\n" +
+                        "    private val data by lazy {\n" +
+                        "        getPuzzleLines()\n" +
+                        "    }\n" +
                         "\n" +
                         "    override fun solvePartA(): Number {\n" +
                         "        TODO(\"Not yet implemented\")\n" +
