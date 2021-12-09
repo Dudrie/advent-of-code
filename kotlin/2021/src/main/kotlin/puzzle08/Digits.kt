@@ -4,6 +4,8 @@ val allSegments = listOf('a', 'b', 'c', 'd', 'e', 'f', 'g')
 
 data class Digit(val value: Int, val segments: List<Char>) {
     val segmentCount = segments.size
+
+    val segmentSet: Set<Char> = segments.toSet()
 }
 
 object Digits {
@@ -21,4 +23,17 @@ object Digits {
     )
 
     operator fun get(i: Int): Digit = digits[i]
+
+    fun getDigitFromSegments(segments: List<Char>): Digit {
+        val segmentSet = segments.toSet()
+
+        for (digit in digits) {
+            if (digit.segmentSet == segmentSet) {
+                return digit
+            }
+        }
+
+        throw Error("No digit found for the segments $segments")
+    }
+
 }

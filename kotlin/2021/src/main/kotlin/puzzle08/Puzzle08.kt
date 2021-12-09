@@ -4,7 +4,7 @@ import common.PuzzleSolver
 
 class Puzzle08 : PuzzleSolver(8) {
     private val data by lazy {
-        loadPuzzleTestData(2)
+//        loadPuzzleTestData(1)
         getPuzzleLines()
     }
 
@@ -26,16 +26,23 @@ class Puzzle08 : PuzzleSolver(8) {
     }
 
     override fun solvePartB(): Number {
-        displays[0].analysePatterns()
-        TODO("Not yet implemented")
+        var sum = 0
+
+        displays.forEach {
+            it.analysePatterns()
+            sum += it.readNumber()
+        }
+
+        return sum
     }
 }
 
 class Display(input: String) {
-    val patterns: List<String>
+    private val patterns: List<String>
     val output: List<String>
 
-    private val segmentMapping: MutableMap<Char, List<Char>> = getStartingSegmentMapping()
+    private val mappingHelper: MutableMap<Char, List<Char>> = getStartingSegmentMapping()
+    private var segmentMapping: SegmentMapping? = null
 
     init {
         val splitInput = input.split(' ')
@@ -45,10 +52,24 @@ class Display(input: String) {
 
     fun analysePatterns() {
         generateMappingFromPatterns()
-        val mapping = doFinalExclusion()
+        segmentMapping = doFinalExclusion()
+    }
 
-        
-        TODO("Mappings durch 'Ausschlussverfahren' vervollständigen.")
+    fun readNumber(): Int {
+        if (segmentMapping == null) {
+            throw Error("Call analysePattern() first.")
+        }
+
+        var number = ""
+
+        output.forEach {
+            val segments = it.toCharArray().map { char -> segmentMapping!!.getSegmentForReadChar(char) }
+            val digit = Digits.getDigitFromSegments(segments)
+
+            number += digit.value
+        }
+
+        return number.toInt()
     }
 
     private fun generateMappingFromPatterns() {
@@ -66,8 +87,8 @@ class Display(input: String) {
         }
     }
 
-    private fun doFinalExclusion(): List<SegmentMapping> {
-        var mapping = segmentMapping.map { (char, list) -> SegmentMapping(char, list.toMutableList()) }
+    private fun doFinalExclusion(): SegmentMapping {
+        var mapping = mappingHelper.map { (char, list) -> SegmentMappingInformation(char, list.toMutableList()) }
         var isDone = false
 
         while (!isDone) {
@@ -89,17 +110,17 @@ class Display(input: String) {
             isDone = !hadChanges
         }
 
-        return mapping
+        return SegmentMapping(mapping)
     }
 
     private fun adjustMapping(segments: List<Char>, pattern: String) {
         val charsNotInPattern = inverseMapOfSegments(pattern.toCharArray().toList())
 
         segments.forEach {
-            val currentSegments = segmentMapping[it]!!.toMutableList()
+            val currentSegments = mappingHelper[it]!!.toMutableList()
 
             charsNotInPattern.forEach { char -> currentSegments.remove(char) }
-            segmentMapping[it] = currentSegments
+            mappingHelper[it] = currentSegments
         }
     }
 
@@ -120,11 +141,22 @@ class Display(input: String) {
     }
 }
 
-data class SegmentMapping(val segment: Char, val mapping: MutableList<Char>) {
+data class SegmentMappingInformation(val segment: Char, val mapping: MutableList<Char>) {
     val mappingSize: Int
         get() = mapping.size
 
     fun removeMapping(char: Char) = mapping.remove(char)
+}
+
+class SegmentMapping(information: List<SegmentMappingInformation>) {
+    private val mapping: Map<Char, Char>
+
+    init {
+        mapping = mutableMapOf()
+        information.forEach { mapping[it.mapping[0]] = it.segment }
+    }
+
+    fun getSegmentForReadChar(readChar: Char): Char = mapping[readChar]!!
 }
 
 fun main() {
