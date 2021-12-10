@@ -22,4 +22,9 @@ data class Coordinates(val x: Int, val y: Int) {
 
         return list
     }
+
+    operator fun plus(vector: Vector): Coordinates = Coordinates(x + vector.deltaX, y + vector.deltaY)
+
+    operator fun plus(direction: Direction): Coordinates = plus(direction.vector)
+
 }
