@@ -1,6 +1,7 @@
 package puzzle02
 
 import common.PuzzleSolver
+import extensions.findNonNull
 
 class Puzzle02 : PuzzleSolver(2) {
     private val data by lazy {
@@ -67,10 +68,6 @@ class Puzzle02 : PuzzleSolver(2) {
 
         return handler(opponentsStrategy, yourStrategy)
     }
-}
-
-private fun <T> List<T>.findNonNull(predicate: (T) -> Boolean): T {
-    return find(predicate) ?: throw NoSuchElementException("No element was found matching the given predicate.")
 }
 
 private enum class RPSChoice(val shapeScore: Int) {
