@@ -33,23 +33,26 @@ class LavaCave(input: List<String>) {
     }
 
     fun getBasinSize(startPoint: LowPoint): Int {
-        val points = getPointsInBasin(startPoint.point, startPoint.height)
+        val points = getPointsInBasin(startPoint, mutableSetOf())
 
         return points.size
     }
 
-    private fun getPointsInBasin(startPoint: Coordinates, heightOfStart: Int): Set<Coordinates> {
-        if (heightOfStart == 9) {
+    private fun getPointsInBasin(startPoint: LowPoint, checked: MutableSet<Coordinates>): Set<LowPoint> {
+        if (startPoint.height == 9) {
             return setOf()
         }
 
+        val newHeight = startPoint.height + 1
         val points = mutableSetOf(startPoint)
-        val newHeight = heightOfStart + 1
+        checked += startPoint.point
 
         ALL_DIRECTIONS.forEach {
-            val newPoint = startPoint + it
-            if (isInCave(newPoint) && getHeightAt(newPoint) == newHeight && !points.contains(newPoint)) {
-                points += getPointsInBasin(newPoint, newHeight)
+            val newPoint = startPoint.point + it
+
+            if (isInCave(newPoint) && getHeightAt(newPoint) != 9 && !checked.contains(newPoint)) {
+                checked += newPoint
+                points += getPointsInBasin(LowPoint(getHeightAt(newPoint), newPoint), checked)
             }
         }
 
