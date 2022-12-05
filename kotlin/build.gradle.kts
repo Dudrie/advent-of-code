@@ -1,14 +1,28 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 group = "de.github.dudrie"
 version = "1.0"
 
+plugins {
+    kotlin("jvm") version "1.7.20"
+}
+
 allprojects {
+    group = rootProject.group
+    version = rootProject.version
+
     repositories {
         mavenCentral()
     }
+
+    tasks.withType<KotlinCompile>() {
+        kotlinOptions.jvmTarget = "17"
+    }
+
 }
 
 task("createPuzzle") {
-    val currentYear = 2021
+    val currentYear = 2022
     val projectPath = "$currentYear/src/main"
 
     doLast {
