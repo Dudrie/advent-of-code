@@ -26,13 +26,10 @@ class Puzzle01 : PuzzleSolver(1) {
         this.inventories = inventories
     }
 
-    override fun solvePartA(): Number {
-        return inventories.maxOf { inv -> inv.sumOf { it } }
-    }
+    override fun solvePartA(): Number = inventories.maxOf { inv -> inv.sumOf { it } }
 
-    override fun solvePartB(): Number {
-        TODO("Not yet implemented")
-    }
+    override fun solvePartB(): Number =
+        inventories.map { inv -> inv.sumOf { it } }.sortedDescending().subList(0, 3).sumOf { it }
 
 }
 
