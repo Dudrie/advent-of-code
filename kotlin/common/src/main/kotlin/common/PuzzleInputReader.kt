@@ -7,9 +7,10 @@ data class PuzzleInputReader(val puzzleNumber: Int, val testNo: Int? = null) {
 
     fun getPuzzleInput(): String = loadInput()
 
-    fun getPuzzleInputSplitByLines(): List<String> = getPuzzleInputWithEmptyLines().filter { it != "" }
+    fun getPuzzleInputSplitByLines(): List<String> =
+        getPuzzleInputWithEmptyLines().filter { it != "" }
 
-    private fun getPuzzleInputWithEmptyLines(): List<String> = this.loadInput().split(Regex("\r\n|\r|\n"))
+    fun getPuzzleInputWithEmptyLines(): List<String> = this.loadInput().split(Regex("\r\n|\r|\n"))
 
     private fun loadInput(): String {
         val numString = puzzleNumber.toTwoDigitString()
@@ -26,7 +27,8 @@ data class PuzzleInputReader(val puzzleNumber: Int, val testNo: Int? = null) {
     private fun loadResource(filePath: String): URL {
         val url = this::class.java.classLoader.getResource(filePath)
 
-        return url ?: throw FileNotFoundException("The puzzle file at \"$filePath\" could not be found.")
+        return url
+            ?: throw FileNotFoundException("The puzzle file at \"$filePath\" could not be found.")
     }
 
 }

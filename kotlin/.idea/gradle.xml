@@ -10,6 +10,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/2021" />
+            <option value="$PROJECT_DIR$/2022" />
+            <option value="$PROJECT_DIR$/2022/advent-of-code.2022" />
             <option value="$PROJECT_DIR$/common" />
           </set>
         </option>

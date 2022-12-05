@@ -19,6 +19,9 @@ abstract class PuzzleSolver(private val puzzleNumber: Int) {
 
     protected fun getPuzzleLines(): List<String> = inputReader.getPuzzleInputSplitByLines()
 
+    protected fun getPuzzleLinesWithEmpty(): List<String> =
+        inputReader.getPuzzleInputWithEmptyLines()
+
     @Suppress("unused")
     protected fun loadPuzzleTestData(testNo: Int) {
         inputReader = PuzzleInputReader(puzzleNumber, testNo)
