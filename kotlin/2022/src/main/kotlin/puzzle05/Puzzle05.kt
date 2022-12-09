@@ -10,27 +10,39 @@ class Puzzle05 : PuzzleSolver(5) {
     }
 
     private val firstRowWithMove = getEmptyLineIndex() + 1
-    private val stacks: List<Stack<Char>> = loadCrates()
 
     private val moveRegex = Regex("move (\\d+) from (\\d+) to (\\d+)")
 
-    override fun solvePartA(): String {
+    override fun solvePartA(): String =
+        moveCrates(multipleAtOnce = false).map { it.peek() }.joinToString("")
+
+    override fun solvePartB(): String =
+        moveCrates(multipleAtOnce = true).map { it.peek() }.joinToString("")
+
+
+    private fun moveCrates(multipleAtOnce: Boolean): List<Stack<Char>> {
+        val stacks = loadCrates()
+
         data.listIterator(firstRowWithMove).forEach { moveCommand ->
             val (count, from, to) = moveRegex.find(moveCommand)?.destructured
                 ?: throw Exception("Command does not match regex.")
             val startStack = stacks[from.toInt() - 1]
             val endStack = stacks[to.toInt() - 1]
 
-            repeat(count.toInt()) {
-                endStack.push(startStack.pop())
+            if (multipleAtOnce) {
+                val crates = mutableListOf<Char>()
+                repeat(count.toInt()) {
+                    crates.add(0, startStack.pop())
+                }
+                crates.forEach { endStack.push(it) }
+            } else {
+                repeat(count.toInt()) {
+                    endStack.push(startStack.pop())
+                }
             }
         }
 
-        return stacks.map { it.peek() }.joinToString("")
-    }
-
-    override fun solvePartB(): Number {
-        TODO("Not yet implemented")
+        return stacks
     }
 
     private fun loadCrates(): List<Stack<Char>> {
