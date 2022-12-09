@@ -21,7 +21,7 @@ data class PuzzleInputReader(val puzzleNumber: Int, val testNo: Int? = null) {
         }
         val filePath = "Puzzle$numString/$testPostfix.txt"
 
-        return loadResource(filePath).readText(Charsets.UTF_8).trim()
+        return loadResource(filePath).readText(Charsets.UTF_8).trimEnd()
     }
 
     private fun loadResource(filePath: String): URL {
