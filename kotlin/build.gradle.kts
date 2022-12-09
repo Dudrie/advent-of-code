@@ -71,6 +71,7 @@ fun createNewPuzzleCodeFile(puzzleNo: Int, codePath: String) {
                         "\n" +
                         "class Puzzle$puzzleNoTwoDigits : PuzzleSolver($puzzleNo) {\n" +
                         "    private val data by lazy {\n" +
+                        "        loadPuzzleTestData(1)\n" +
                         "        getPuzzleLines()\n" +
                         "    }\n" +
                         "\n" +
