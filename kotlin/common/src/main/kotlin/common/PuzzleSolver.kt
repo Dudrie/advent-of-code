@@ -5,9 +5,9 @@ import kotlin.system.measureTimeMillis
 abstract class PuzzleSolver(private val puzzleNumber: Int) {
     private var inputReader: PuzzleInputReader = PuzzleInputReader(puzzleNumber)
 
-    abstract fun solvePartA(): Number
+    abstract fun solvePartA(): Any
 
-    abstract fun solvePartB(): Number
+    abstract fun solvePartB(): Any
 
     fun solve() {
         solvePart(PuzzlePart.A, this::solvePartA)
@@ -27,9 +27,9 @@ abstract class PuzzleSolver(private val puzzleNumber: Int) {
         inputReader = PuzzleInputReader(puzzleNumber, testNo)
     }
 
-    private fun solvePart(part: PuzzlePart, action: () -> Number) {
+    private fun solvePart(part: PuzzlePart, action: () -> Any) {
         try {
-            var solution: Number
+            var solution: Any
             val time = measureTimeMillis { solution = action() }
             printSolution(solution, part, time)
         } catch (e: NotImplementedError) {
@@ -37,7 +37,7 @@ abstract class PuzzleSolver(private val puzzleNumber: Int) {
         }
     }
 
-    private fun printSolution(solution: Number, part: PuzzlePart, time: Long) {
+    private fun printSolution(solution: Any, part: PuzzlePart, time: Long) {
         println("[Solution] Part $part: $solution ($time ms)")
     }
 }
